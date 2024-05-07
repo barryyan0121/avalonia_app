@@ -1,46 +1,44 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using Avalonia.Collections;
 using MySql.Data.MySqlClient;
-using System;
 
-namespace AvaloniaApplication.Models
+namespace AvaloniaApplication.Models;
+
+public class DatabaseManager
 {
-    public class DatabaseManager : Window
+    private readonly string _connectionString;
+
+    public DatabaseManager(string connectionString)
     {
-        private readonly MySqlConnection _connection;
+        _connectionString = connectionString;
+    }
 
-        public DatabaseManager()
+    public AvaloniaList<ProductionData> LoadData()
+    {
+        var tableData = new AvaloniaList<ProductionData>();
+
+        using var connection = new MySqlConnection(_connectionString);
+        connection.Open();
+        var query = "SELECT * FROM production_data";
+        var command = new MySqlCommand(query, connection);
+        var reader = command.ExecuteReader();
+
+        while (reader.Read())
         {
-            InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            _connection = new MySqlConnection("your_connection_string_here");
-            _connection.Open();
-
-            // Example query
-            using (var cmd = new MySqlCommand("SELECT * FROM your_table", _connection))
+            var productionData = new ProductionData
             {
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Console.WriteLine(reader.GetString(0)); // Print first column value
-                    }
-                }
-            }
+                Id = reader.GetInt32("id"),
+                Name = reader.GetString("name"),
+                QualifiedCount = reader.GetInt32("qualified_count"),
+                DefectiveCount = reader.GetInt32("defective_count"),
+                QualifiedRate = reader.GetDouble("qualified_rate"),
+                TotalCount = reader.GetInt32("total_count"),
+                StartDate = reader.GetDateTime("start_date"),
+                EndDate = reader.GetDateTime("end_date")
+            };
+
+            tableData.Add(productionData);
         }
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            base.OnClosed(e);
-            _connection.Close();
-        }
+        return tableData;
     }
 }
