@@ -6,11 +6,35 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="AvaloniaApplication.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <!-- This only sets the DataContext for the previewer in an IDE,
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-    <vm:MainViewModel />
-  </Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
 
-  <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+    <DockPanel>
+        <Button DockPanel.Dock="Bottom"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center">
+            Add Item
+        </Button>
+        <DataGrid
+            ItemsSource="{Binding TableData}"
+            IsReadOnly="True"
+            CanUserReorderColumns="True"
+            CanUserResizeColumns="True"
+            CanUserSortColumns="True"
+            GridLinesVisibility="All"
+            BorderThickness="1" BorderBrush="White">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="编号" Binding="{Binding Id}" />
+                <DataGridTextColumn Header="工位名" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="合格数" Binding="{Binding QualifiedCount}" />
+                <DataGridTextColumn Header="不合格数" Binding="{Binding DefectiveCount}" />
+                <DataGridTextColumn Header="合格率" Binding="{Binding QualifiedRate}" />
+                <DataGridTextColumn Header="总量" Binding="{Binding TotalCount}" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
 </UserControl>
