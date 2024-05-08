@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
+             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="AvaloniaApplication.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -13,37 +14,47 @@
     </Design.DataContext>
 
 
-    <Grid ColumnDefinitions="Auto,*,*,*" RowDefinitions="*" Margin="4" ShowGridLines="True">
-        <Grid Grid.Column="0" ColumnDefinitions="*" RowDefinitions="Auto,Auto,*" Margin="4" ShowGridLines="True">
-            <TextBlock Grid.Row="0" Grid.Column="0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="当日各设备生产总览"
-                       FontSize="20" />
-            <DataGrid Grid.Row="1" Grid.Column="0"
-                      ItemsSource="{Binding TableData}"
-                      IsReadOnly="True"
-                      AutoGenerateColumns="False"
-                      CanUserReorderColumns="True"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True"
-                      GridLinesVisibility="All"
-                      BorderThickness="1" BorderBrush="White">
-                <DataGrid.Columns>
-                    <!-- <DataGridTextColumn Header="编号" Binding="{Binding Id}" /> -->
-                    <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="合格数" Width="Auto" Binding="{Binding QualifiedCount}" />
-                    <DataGridTextColumn Header="不合格数" Width="Auto" Binding="{Binding DefectiveCount}" />
-                    <DataGridTextColumn Header="合格率" Width="Auto" Binding="{Binding QualifiedRate}" />
-                    <DataGridTextColumn Header="总量" Width="Auto" Binding="{Binding TotalCount}" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <TextBlock Grid.Row="2" Grid.Column="0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="近七日A区设备合格率"
-                       FontSize="20" />
-        </Grid>
+    <Grid ColumnDefinitions="2*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*,*,*" Margin="2" ShowGridLines="True">
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="CornflowerBlue"
+                   FontSize="30">
+            <Run Text="储能电堆装配线生产看板" />
+            <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
+        </TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="当日各设备生产总览"
+                   FontSize="20" />
+        <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="3"
+                  ItemsSource="{Binding DailyData}"
+                  Margin="1"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  CanUserSortColumns="True"
+                  GridLinesVisibility="All">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="工位名" Width="*" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="合格数" Width="*" Binding="{Binding QualifiedCount}" />
+                <DataGridTextColumn Header="不合格数" Width="*" Binding="{Binding DefectiveCount}" />
+                <DataGridTextColumn Header="合格率" Width="*" Binding="{Binding QualifiedRate}" />
+                <DataGridTextColumn Header="总量" Width="*" Binding="{Binding TotalCount}" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <avalonia:CartesianChart Grid.Row="5" Grid.Column="0" Grid.RowSpan="2"
+                                 Series="{Binding Series}" />
+
+        <!-- <TextBlock Grid.Row="2" Grid.Column="0" -->
+        <!--            HorizontalAlignment="Center" -->
+        <!--            VerticalAlignment="Center" -->
+        <!--            Text="近七日A区设备合格率" -->
+        <!--            FontSize="20" /> -->
 
     </Grid>
+
 </UserControl>
