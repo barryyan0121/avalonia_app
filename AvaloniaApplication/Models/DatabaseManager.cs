@@ -61,7 +61,7 @@ public class DatabaseManager(string connectionString)
         }
 
         // Initialize totalA with 0s for all expected dates
-        foreach (var date in expectedDates)
+        foreach (var _ in expectedDates)
             for (var i = 0; i < 6; i++)
             {
                 totalA[i].Add(0);

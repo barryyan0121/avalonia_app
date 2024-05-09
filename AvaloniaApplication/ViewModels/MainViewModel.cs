@@ -22,9 +22,7 @@ public class MainViewModel : ViewModelBase
         const string connectionString =
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
         var databaseManager = new DatabaseManager(connectionString);
-        DailyData = databaseManager.LoadData();
-        WeeklyData = databaseManager.LoadWeeklyData();
-        TotalSeriesA = ChartDataGenerator.GenerateSeries(WeeklyData["totalA"], ChartDataGenerator.ProductionLinesA);
+        RefreshData(databaseManager);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
@@ -38,7 +36,10 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _today, value);
     }
 
-    public ISeries[] TotalSeriesA { get; set; }
+    public ISeries[] TotalSeriesA { get; set; } = new ISeries[6];
+    public ISeries[] TotalSeriesB { get; set; } = new ISeries[6];
+    public ISeries[] RateSeriesA { get; set; } = new ISeries[6];
+    public ISeries[] RateSeriesB { get; set; } = new ISeries[6];
 
     public Axis[] XAxes { get; set; } =
     {
@@ -53,11 +54,26 @@ public class MainViewModel : ViewModelBase
         }
     };
 
-    public Axis[] YAxes { get; set; } =
+    public Axis[] YProductionAxes { get; set; } =
     [
         new Axis
         {
             Name = "产量",
+            NamePaint = new SolidColorPaint(SKColors.White),
+            LabelsPaint = new SolidColorPaint(SKColors.White),
+            TextSize = 15,
+            SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
+            {
+                StrokeThickness = 2
+            }
+        }
+    ];
+
+    public Axis[] YRateAxes { get; set; } =
+    [
+        new Axis
+        {
+            Name = "合格率 (%)",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
             TextSize = 15,
@@ -78,13 +94,21 @@ public class MainViewModel : ViewModelBase
         while (true)
         {
             // Reload data from the database
-            DailyData = databaseManager.LoadData();
-            WeeklyData = databaseManager.LoadWeeklyData();
-            TotalSeriesA = ChartDataGenerator.GenerateSeries(WeeklyData["totalA"], ChartDataGenerator.ProductionLinesA);
+            RefreshData(databaseManager);
             this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
             this.RaisePropertyChanged(nameof(WeeklyData));
-            this.RaisePropertyChanged(nameof(TotalSeriesA));
-            await Task.Delay(TimeSpan.FromSeconds(10)); // Wait for 10 seconds before reloading data again
+            await Task.Delay(TimeSpan.FromSeconds(5)); // Wait for 5 seconds before reloading data again
         }
+    }
+
+    private void RefreshData(DatabaseManager databaseManager)
+    {
+        // Reload data from the database
+        DailyData = databaseManager.LoadData();
+        WeeklyData = databaseManager.LoadWeeklyData();
+        ChartDataGenerator.GenerateSeries(TotalSeriesA, WeeklyData["totalA"], ChartDataGenerator.ProductionLinesA);
+        ChartDataGenerator.GenerateSeries(TotalSeriesB, WeeklyData["totalB"], ChartDataGenerator.ProductionLinesB);
+        ChartDataGenerator.GenerateSeries(RateSeriesA, WeeklyData["rateA"], ChartDataGenerator.ProductionLinesA);
+        ChartDataGenerator.GenerateSeries(RateSeriesB, WeeklyData["rateB"], ChartDataGenerator.ProductionLinesB);
     }
 }

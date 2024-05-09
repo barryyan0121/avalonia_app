@@ -29,24 +29,28 @@ public static class ChartDataGenerator
         "框膜组件检测"
     ];
 
-    public static ISeries[] GenerateSeries(List<List<double>> data, List<string> labels)
+    public static void GenerateSeries(ISeries[] seriesArray, List<List<double>> data, List<string> labels)
     {
-        var ret = new ISeries[data.Count];
-
         for (var i = 0; i < data.Count; i++)
-        {
-            var lineSeries = new LineSeries<double>
+            // 如果给定的 seriesArray 已经初始化，则更新对应索引处的 ISeries 对象的 Values 属性
+            if (seriesArray[i] is LineSeries<double> line)
             {
-                Values = new ObservableCollection<double>(data[i]),
-                Name = labels[i],
-                DataLabelsPosition = DataLabelsPosition.Top,
-                Fill = null
-            };
+                line.Values = new ObservableCollection<double>(data[i]);
+            }
 
-            ret[i] = lineSeries;
-        }
+            else
+            {
+                // 如果给定的 seriesArray 还未初始化，或者索引超出了数组长度，则创建新的 ISeries 对象并添加到数组中
+                var lineSeries = new LineSeries<double>
+                {
+                    Values = new ObservableCollection<double>(data[i]),
+                    Name = labels[i],
+                    DataLabelsPosition = DataLabelsPosition.Top,
+                    Fill = null
+                };
 
-        return ret;
+                seriesArray[i] = lineSeries;
+            }
     }
 
     public static string[] GetLastSevenDays()

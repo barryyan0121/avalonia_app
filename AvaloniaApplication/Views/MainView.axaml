@@ -14,7 +14,8 @@
     </Design.DataContext>
 
 
-    <Grid ColumnDefinitions="2*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*,*,*" Margin="2" ShowGridLines="True">
+    <Grid ColumnDefinitions="2*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*,*,Auto,*,*,*,*,*,*" Margin="2"
+          ShowGridLines="True">
         <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
@@ -28,7 +29,7 @@
                    VerticalAlignment="Center"
                    Text="当日各设备生产总览"
                    FontSize="20" />
-        <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="3"
+        <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="5"
                   ItemsSource="{Binding DailyData}"
                   Margin="1"
                   IsReadOnly="True"
@@ -46,13 +47,57 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <avalonia:CartesianChart Grid.Row="5" Grid.Column="0" Grid.RowSpan="3"
-                                 Series="{Binding TotalSeriesA}"
+        <TextBlock Grid.Row="7" Grid.Column="0"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="近七日A区设备合格率"
+                   FontSize="20" />
+
+        <avalonia:CartesianChart Grid.Row="8" Grid.Column="0" Grid.RowSpan="6"
+                                 Series="{Binding RateSeriesA}"
                                  XAxes="{Binding XAxes}"
-                                 YAxes="{Binding YAxes}"
+                                 YAxes="{Binding YRateAxes}"
                                  LegendPosition="Bottom"
                                  LegendTextPaint="{Binding LegendTextPaint}" />
 
+        <TextBlock Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="近七日A区设备产量"
+                   FontSize="20" />
+
+        <avalonia:CartesianChart Grid.Row="8" Grid.Column="1" Grid.RowSpan="6" Grid.ColumnSpan="2"
+                                 Series="{Binding TotalSeriesA}"
+                                 XAxes="{Binding XAxes}"
+                                 YAxes="{Binding YProductionAxes}"
+                                 LegendPosition="Bottom"
+                                 LegendTextPaint="{Binding LegendTextPaint}" />
+
+        <TextBlock Grid.Row="7" Grid.Column="3" Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="近七日B区设备合格率"
+                   FontSize="20" />
+
+        <avalonia:CartesianChart Grid.Row="8" Grid.Column="3" Grid.RowSpan="6" Grid.ColumnSpan="2"
+                                 Series="{Binding RateSeriesB}"
+                                 XAxes="{Binding XAxes}"
+                                 YAxes="{Binding YRateAxes}"
+                                 LegendPosition="Bottom"
+                                 LegendTextPaint="{Binding LegendTextPaint}" />
+
+        <TextBlock Grid.Row="7" Grid.Column="5" Grid.ColumnSpan="2"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Text="近七日B区设备产量"
+                   FontSize="20" />
+
+        <avalonia:CartesianChart Grid.Row="8" Grid.Column="5" Grid.RowSpan="6" Grid.ColumnSpan="2"
+                                 Series="{Binding TotalSeriesB}"
+                                 XAxes="{Binding XAxes}"
+                                 YAxes="{Binding YProductionAxes}"
+                                 LegendPosition="Bottom"
+                                 LegendTextPaint="{Binding LegendTextPaint}" />
 
         <!-- <TextBlock Grid.Row="2" Grid.Column="0" -->
         <!--            HorizontalAlignment="Center" -->
