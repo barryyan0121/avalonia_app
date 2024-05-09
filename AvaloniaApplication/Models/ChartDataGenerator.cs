@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using LiveChartsCore;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 
 namespace AvaloniaApplication.Models;
 
@@ -29,6 +31,22 @@ public static class ChartDataGenerator
         "框膜组件检测"
     ];
 
+    public static readonly List<string> ProductionLinesTotal =
+    [
+        "胶纸切割",
+        "板框焊接",
+        "板组件A",
+        "板组件B",
+        "膜框组件A",
+        "膜框组件B",
+        "三合一电池A",
+        "三合一电池B",
+        "三合一电池C",
+        "三合一电池检测",
+        "总装线",
+        "框膜组件检测"
+    ];
+
     public static void GenerateSeries(ISeries[] seriesArray, List<List<double>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)
@@ -45,12 +63,44 @@ public static class ChartDataGenerator
                 {
                     Values = new ObservableCollection<double>(data[i]),
                     Name = labels[i],
+                    DataLabelsSize = 10,
+                    DataLabelsPaint = new SolidColorPaint(SKColors.White),
                     DataLabelsPosition = DataLabelsPosition.Top,
-                    Fill = null
+                    Fill = null,
+                    GeometrySize = 8
                 };
 
                 seriesArray[i] = lineSeries;
             }
+    }
+
+    public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names, Dictionary<string, double> map)
+    {
+        for (var i = 0; i < seriesArray.Length; i++)
+        {
+            var series = seriesArray[i];
+            var name = names[i];
+            if (!map.TryGetValue(name, out var rate)) continue;
+            if (series[0] is PieSeries<double>)
+            {
+                series[0].Values = new[] { rate };
+                series[1].Values = new[] { 1 - rate };
+            }
+            else
+            {
+                var pie1 = new PieSeries<double>
+                {
+                    Values = new[] { rate }
+                };
+                series[0] = pie1;
+
+                var pie2 = new PieSeries<double>
+                {
+                    Values = new[] { 1 - rate }
+                };
+                series[1] = pie2;
+            }
+        }
     }
 
     public static string[] GetLastSevenDays()

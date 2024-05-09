@@ -8,11 +8,13 @@ namespace AvaloniaApplication.Models;
 
 public class DatabaseManager(string connectionString)
 {
+    public Dictionary<string, double> RateMap = new();
+
     public AvaloniaList<ProductionData> LoadData()
     {
         using var connection = new MySqlConnection(connectionString);
         connection.Open();
-        var query = "SELECT * FROM production_data WHERE DATE(date) = CURDATE();";
+        const string query = "SELECT * FROM production_data WHERE DATE(date) = CURDATE();";
         var command = new MySqlCommand(query, connection);
         var reader = command.ExecuteReader();
         var data = new AvaloniaList<ProductionData>();
@@ -29,6 +31,7 @@ public class DatabaseManager(string connectionString)
                 TotalCount = reader.GetInt32("total_count"),
                 Date = reader.GetDateTime("date")
             };
+            RateMap[productionData.Name] = productionData.QualifiedRate;
 
             data.Add(productionData);
         }

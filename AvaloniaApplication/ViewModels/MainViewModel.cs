@@ -17,6 +17,8 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
+        for (var i = 0; i < PieSeries.Length; i++) PieSeries[i] = new ISeries[2];
+
         LiveCharts.Configure(config =>
             config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
         const string connectionString =
@@ -41,6 +43,9 @@ public class MainViewModel : ViewModelBase
     public ISeries[] RateSeriesA { get; set; } = new ISeries[6];
     public ISeries[] RateSeriesB { get; set; } = new ISeries[6];
 
+    public ISeries[][] PieSeries { get; set; } = new ISeries[12][];
+
+
     public Axis[] XAxes { get; set; } =
     {
         new()
@@ -49,7 +54,7 @@ public class MainViewModel : ViewModelBase
             Labels = ChartDataGenerator.GetLastSevenDays(),
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            TextSize = 15,
+            TextSize = 10,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 }
         }
     };
@@ -61,7 +66,7 @@ public class MainViewModel : ViewModelBase
             Name = "产量",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            TextSize = 15,
+            TextSize = 10,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
             {
                 StrokeThickness = 2
@@ -76,7 +81,7 @@ public class MainViewModel : ViewModelBase
             Name = "合格率 (%)",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            TextSize = 15,
+            TextSize = 10,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
             {
                 StrokeThickness = 2
@@ -110,5 +115,7 @@ public class MainViewModel : ViewModelBase
         ChartDataGenerator.GenerateSeries(TotalSeriesB, WeeklyData["totalB"], ChartDataGenerator.ProductionLinesB);
         ChartDataGenerator.GenerateSeries(RateSeriesA, WeeklyData["rateA"], ChartDataGenerator.ProductionLinesA);
         ChartDataGenerator.GenerateSeries(RateSeriesB, WeeklyData["rateB"], ChartDataGenerator.ProductionLinesB);
+        ChartDataGenerator.GeneratePieCharts(PieSeries, ChartDataGenerator.ProductionLinesTotal,
+            databaseManager.RateMap);
     }
 }
