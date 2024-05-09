@@ -38,16 +38,21 @@
                   CanUserSortColumns="True"
                   GridLinesVisibility="All">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="工位名" Width="*" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="合格数" Width="*" Binding="{Binding QualifiedCount}" />
-                <DataGridTextColumn Header="不合格数" Width="*" Binding="{Binding DefectiveCount}" />
-                <DataGridTextColumn Header="合格率" Width="*" Binding="{Binding QualifiedRate}" />
-                <DataGridTextColumn Header="总量" Width="*" Binding="{Binding TotalCount}" />
+                <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="合格数" Width="Auto" Binding="{Binding QualifiedCount}" />
+                <DataGridTextColumn Header="不合格数" Width="Auto" Binding="{Binding DefectiveCount}" />
+                <DataGridTextColumn Header="合格率" Width="Auto" Binding="{Binding QualifiedRate}" />
+                <DataGridTextColumn Header="总量" Width="Auto" Binding="{Binding TotalCount}" />
             </DataGrid.Columns>
         </DataGrid>
 
-        <avalonia:CartesianChart Grid.Row="5" Grid.Column="0" Grid.RowSpan="2"
-                                 Series="{Binding Series}" />
+        <avalonia:CartesianChart Grid.Row="5" Grid.Column="0" Grid.RowSpan="3"
+                                 Series="{Binding TotalSeriesA}"
+                                 XAxes="{Binding XAxes}"
+                                 YAxes="{Binding YAxes}"
+                                 LegendPosition="Bottom"
+                                 LegendTextPaint="{Binding LegendTextPaint}" />
+
 
         <!-- <TextBlock Grid.Row="2" Grid.Column="0" -->
         <!--            HorizontalAlignment="Center" -->
