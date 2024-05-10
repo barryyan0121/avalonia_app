@@ -119,7 +119,6 @@ public class MainViewModel : ViewModelBase
         ChartDataGenerator.GenerateSeries(TotalSeriesB, WeeklyData["totalB"], ChartDataGenerator.ProductionLinesB);
         ChartDataGenerator.GenerateSeries(RateSeriesA, WeeklyData["rateA"], ChartDataGenerator.ProductionLinesA);
         ChartDataGenerator.GenerateSeries(RateSeriesB, WeeklyData["rateB"], ChartDataGenerator.ProductionLinesB);
-        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames,
-            databaseManager.RateMap);
+        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
     }
 }
