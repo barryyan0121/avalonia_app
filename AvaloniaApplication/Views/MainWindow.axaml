@@ -6,6 +6,6 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniaApplication.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
-        Title="AvaloniaApplication">
+        Title="生产看板">
     <views:MainView />
 </Window>

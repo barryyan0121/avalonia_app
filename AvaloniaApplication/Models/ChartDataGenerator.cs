@@ -67,7 +67,8 @@ public static class ChartDataGenerator
                     DataLabelsPaint = new SolidColorPaint(SKColors.White),
                     DataLabelsPosition = DataLabelsPosition.Top,
                     Fill = null,
-                    GeometrySize = 8
+                    GeometrySize = 8,
+                    LineSmoothness = 0
                 };
 
                 seriesArray[i] = lineSeries;
@@ -84,19 +85,27 @@ public static class ChartDataGenerator
             if (series[0] is PieSeries<double>)
             {
                 series[0].Values = new[] { rate };
-                series[1].Values = new[] { 1 - rate };
+                series[1].Values = new[] { Math.Round(1 - rate, 5) };
             }
             else
             {
                 var pie1 = new PieSeries<double>
                 {
-                    Values = new[] { rate }
+                    Values = new[] { rate },
+                    Name = "合格"
+                    // DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
+                    // DataLabelsSize = 15,
+                    // DataLabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255))
                 };
                 series[0] = pie1;
 
                 var pie2 = new PieSeries<double>
                 {
-                    Values = new[] { 1 - rate }
+                    Values = new[] { Math.Round(1 - rate, 5) },
+                    Name = "不合格"
+                    // DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
+                    // DataLabelsSize = 15,
+                    // DataLabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255))
                 };
                 series[1] = pie2;
             }

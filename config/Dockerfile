@@ -12,6 +12,6 @@ ENV MYSQL_ROOT_PASSWORD=root_password \
 ENV LANG=C.UTF-8
 
 # 复制 init.sql 文件到容器内的 /docker-entrypoint-initdb.d/ 目录下
-COPY init.sql /docker-entrypoint-initdb.d/
+COPY query.sql /docker-entrypoint-initdb.d/
 
 EXPOSE 3306
