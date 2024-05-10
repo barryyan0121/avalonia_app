@@ -1,3 +1,4 @@
+-- Create a table to store production data
 CREATE TABLE IF NOT EXISTS production_data
 (
     id              INT AUTO_INCREMENT PRIMARY KEY,
@@ -54,3 +55,25 @@ FROM (SELECT '胶纸切割' AS name
                      SELECT 5
                      UNION ALL
                      SELECT 6) AS days;
+
+-- 启用事件调度器
+SET GLOBAL event_scheduler = ON;
+
+-- 创建一个每天执行一次的事件
+DELIMITER //
+
+CREATE EVENT UpdateQualificationRate
+    ON SCHEDULE
+        EVERY 1 HOUR
+            STARTS CURRENT_TIMESTAMP()
+    COMMENT 'Update qualification rate daily'
+    DO
+    BEGIN
+        -- 在这里编写更新合格率字段的SQL语句
+        UPDATE production_data
+        SET total_count    = qualified_count + defective_count,
+            qualified_rate = (qualified_count / total_count)
+        WHERE name LIKE '%';
+    END//
+
+DELIMITER ;

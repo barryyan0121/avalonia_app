@@ -39,10 +39,10 @@
                   CanUserSortColumns="True"
                   GridLinesVisibility="All">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="工位名" Width="2*" Binding="{Binding Name}" />
-                <DataGridTextColumn Header="合格数" Width="*" Binding="{Binding QualifiedCount}" />
-                <DataGridTextColumn Header="不合格数" Width="*" Binding="{Binding DefectiveCount}" />
-                <DataGridTextColumn Header="合格率" Width="*" Binding="{Binding QualifiedRate}" />
+                <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
+                <DataGridTextColumn Header="合格数" Width="Auto" Binding="{Binding QualifiedCount}" />
+                <DataGridTextColumn Header="不合格数" Width="Auto" Binding="{Binding DefectiveCount}" />
+                <DataGridTextColumn Header="合格率" Width="Auto" Binding="{Binding QualifiedRate}" />
                 <DataGridTextColumn Header="总量" Width="*" Binding="{Binding TotalCount}" />
             </DataGrid.Columns>
         </DataGrid>
@@ -186,72 +186,72 @@
                    VerticalAlignment="Center"
                    Text="{Binding ProductionLineNames[6]}"
                    FontSize="20" />
-        
+
         <avalonia:PieChart Grid.Row="6" Grid.Column="1" Grid.RowSpan="3"
                            Series="{Binding PieSeries[6]}"
                            InitialRotation="-90"
                            LegendPosition="Bottom"
                            LegendTextPaint="{Binding LegendTextPaint}"
                            LegendTextSize="10" />
-        
+
         <TextBlock Grid.Row="5" Grid.Column="2"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Text="{Binding ProductionLineNames[7]}"
                    FontSize="20" />
-        
+
         <avalonia:PieChart Grid.Row="6" Grid.Column="2" Grid.RowSpan="3"
                            Series="{Binding PieSeries[7]}"
                            InitialRotation="-90"
                            LegendPosition="Bottom"
                            LegendTextPaint="{Binding LegendTextPaint}"
                            LegendTextSize="10" />
-        
+
         <TextBlock Grid.Row="5" Grid.Column="3"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Text="{Binding ProductionLineNames[8]}"
                    FontSize="20" />
-        
+
         <avalonia:PieChart Grid.Row="6" Grid.Column="3" Grid.RowSpan="3"
                            Series="{Binding PieSeries[8]}"
                            InitialRotation="-90"
                            LegendPosition="Bottom"
                            LegendTextPaint="{Binding LegendTextPaint}"
                            LegendTextSize="10" />
-        
+
         <TextBlock Grid.Row="5" Grid.Column="4"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Text="{Binding ProductionLineNames[9]}"
                    FontSize="20" />
-        
+
         <avalonia:PieChart Grid.Row="6" Grid.Column="4" Grid.RowSpan="3"
                            Series="{Binding PieSeries[9]}"
                            InitialRotation="-90"
                            LegendPosition="Bottom"
                            LegendTextPaint="{Binding LegendTextPaint}"
                            LegendTextSize="10" />
-        
+
         <TextBlock Grid.Row="5" Grid.Column="5"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Text="{Binding ProductionLineNames[10]}"
                    FontSize="20" />
-        
+
         <avalonia:PieChart Grid.Row="6" Grid.Column="5" Grid.RowSpan="3"
                            Series="{Binding PieSeries[10]}"
                            InitialRotation="-90"
                            LegendPosition="Bottom"
                            LegendTextPaint="{Binding LegendTextPaint}"
                            LegendTextSize="10" />
-        
+
         <TextBlock Grid.Row="5" Grid.Column="6"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Text="{Binding ProductionLineNames[11]}"
                    FontSize="20" />
-        
+
         <avalonia:PieChart Grid.Row="6" Grid.Column="6" Grid.RowSpan="3"
                            Series="{Binding PieSeries[11]}"
                            InitialRotation="-90"

@@ -6,7 +6,7 @@ ENV MYSQL_ROOT_PASSWORD=root_password \
     MYSQL_DATABASE=sample_db \
     MYSQL_USER=sample_user \
     MYSQL_PASSWORD=sample_password \
-    MYSQL_CHARSET=utf8mb4
+    MYSQL_CHARSET=utf8
 
 # 设置环境变量
 ENV LANG=C.UTF-8

@@ -92,10 +92,11 @@ public static class ChartDataGenerator
                 var pie1 = new PieSeries<double>
                 {
                     Values = new[] { rate },
-                    Name = "合格"
-                    // DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
-                    // DataLabelsSize = 15,
-                    // DataLabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255))
+                    Name = "合格",
+                    DataLabelsPaint = new SolidColorPaint(SKColors.White),
+                    DataLabelsSize = 20,
+                    DataLabelsPosition = PolarLabelsPosition.ChartCenter,
+                    DataLabelsFormatter = point => (point.Coordinate.PrimaryValue * 100).ToString("0.0") + "% 合格"
                 };
                 series[0] = pie1;
 
@@ -103,9 +104,6 @@ public static class ChartDataGenerator
                 {
                     Values = new[] { Math.Round(1 - rate, 5) },
                     Name = "不合格"
-                    // DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Outer,
-                    // DataLabelsSize = 15,
-                    // DataLabelsPaint = new SolidColorPaint(new SKColor(255, 255, 255))
                 };
                 series[1] = pie2;
             }

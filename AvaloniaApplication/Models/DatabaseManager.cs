@@ -27,7 +27,7 @@ public class DatabaseManager(string connectionString)
                 Name = reader.GetString("name"),
                 QualifiedCount = reader.GetInt32("qualified_count"),
                 DefectiveCount = reader.GetInt32("defective_count"),
-                QualifiedRate = reader.GetDouble("qualified_rate"),
+                QualifiedRate = Math.Round(reader.GetDouble("qualified_rate"), 5),
                 TotalCount = reader.GetInt32("total_count"),
                 Date = reader.GetDateTime("date")
             };
@@ -122,7 +122,7 @@ public class DatabaseManager(string connectionString)
             {
                 var date = reader.GetDateTime("Date").Date;
                 var dataIndex = expectedDates.IndexOf(date);
-                rateA[i][dataIndex] = reader.GetDouble($"name{i + 1}");
+                rateA[i][dataIndex] = Math.Round(reader.GetDouble($"name{i + 1}"), 2);
             }
 
         weeklyData.Add("rateA", rateA);
@@ -176,7 +176,7 @@ public class DatabaseManager(string connectionString)
             {
                 var date = reader.GetDateTime("Date").Date;
                 var dataIndex = expectedDates.IndexOf(date);
-                rateB[i][dataIndex] = reader.GetDouble($"name{i + 1}");
+                rateB[i][dataIndex] = Math.Round(reader.GetDouble($"name{i + 1}"), 2);
             }
 
         weeklyData.Add("rateB", rateB);
