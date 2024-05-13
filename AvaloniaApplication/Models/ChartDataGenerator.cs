@@ -11,42 +11,6 @@ namespace AvaloniaApplication.Models;
 
 public static class ChartDataGenerator
 {
-    public static readonly List<string> ProductionLinesA =
-    [
-        "胶纸切割",
-        "板框焊接",
-        "板组件A",
-        "板组件B",
-        "膜框组件A",
-        "膜框组件B"
-    ];
-
-    public static readonly List<string> ProductionLinesB =
-    [
-        "三合一电池A",
-        "三合一电池B",
-        "三合一电池C",
-        "三合一电池检测",
-        "总装线",
-        "框膜组件检测"
-    ];
-
-    public static readonly List<string> ProductionLinesTotal =
-    [
-        "胶纸切割",
-        "板框焊接",
-        "板组件A",
-        "板组件B",
-        "膜框组件A",
-        "膜框组件B",
-        "三合一电池A",
-        "三合一电池B",
-        "三合一电池C",
-        "三合一电池检测",
-        "总装线",
-        "框膜组件检测"
-    ];
-
     public static void GenerateSeries(ISeries[] seriesArray, List<List<double>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)

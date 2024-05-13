@@ -1,18 +1,65 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Avalonia.Collections;
 using MySql.Data.MySqlClient;
 
 namespace AvaloniaApplication.Models;
 
-public class DatabaseManager(string connectionString)
+public class DatabaseManager
 {
-    public Dictionary<string, double> RateMap = new();
+    public DatabaseManager(string connectionString)
+    {
+        this._connectionString = connectionString;
+        foreach (var line in ProductionLinesTotal)
+        {
+            RateMap[line] = 0.0;
+        }
+    }
+    
+    private readonly string _connectionString;
+    public static readonly List<string> ProductionLinesA =
+    [
+        "胶纸切割",
+        "板框焊接",
+        "板组件A",
+        "板组件B",
+        "膜框组件A",
+        "膜框组件B"
+    ];
+
+    public static readonly List<string> ProductionLinesB =
+    [
+        "三合一电池A",
+        "三合一电池B",
+        "三合一电池C",
+        "三合一电池检测",
+        "总装线",
+        "框膜组件检测"
+    ];
+
+    public static readonly List<string> ProductionLinesTotal =
+    [
+        "胶纸切割",
+        "板框焊接",
+        "板组件A",
+        "板组件B",
+        "膜框组件A",
+        "膜框组件B",
+        "三合一电池A",
+        "三合一电池B",
+        "三合一电池C",
+        "三合一电池检测",
+        "总装线",
+        "框膜组件检测"
+    ];
+
+    public readonly Dictionary<string, double> RateMap = new();
 
     public AvaloniaList<ProductionData> LoadData()
     {
-        using var connection = new MySqlConnection(connectionString);
+        using var connection = new MySqlConnection(_connectionString);
         connection.Open();
         const string query = "SELECT * FROM production_data WHERE DATE(date) = CURDATE();";
         var command = new MySqlCommand(query, connection);
@@ -41,7 +88,7 @@ public class DatabaseManager(string connectionString)
 
     public Dictionary<string, List<List<double>>> LoadWeeklyData()
     {
-        using var connection = new MySqlConnection(connectionString);
+        using var connection = new MySqlConnection(_connectionString);
         connection.Open();
 
         // Create a list of all expected dates for the last 7 days
@@ -73,19 +120,22 @@ public class DatabaseManager(string connectionString)
                 rateB[i].Add(0);
             }
 
+        var queryBuilder = new StringBuilder();
+        queryBuilder.Append("SELECT DATE(Date) AS Date,");
+        for (var i = 0; i < ProductionLinesA.Count; i++)
+        {
+            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesA[i]}', total_count, 0)) AS name{i + 1}");
+            if (i < ProductionLinesA.Count - 1)
+            {
+                queryBuilder.Append(',');
+            }
+        }
+        queryBuilder.Append(" FROM production_data");
+        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
+        queryBuilder.Append(" GROUP BY DATE(Date)");
+        queryBuilder.Append(" ORDER BY DATE(Date);");
 
-        var query = @"SELECT DATE(Date) AS Date,
-                           MAX(IF(name = '胶纸切割', total_count, 0)) AS name1,
-                           MAX(IF(name = '板框焊接', total_count, 0)) AS name2,
-                           MAX(IF(name = '板组件A', total_count, 0)) AS name3,
-                           MAX(IF(name = '板组件B', total_count, 0)) AS name4,
-                           MAX(IF(name = '膜框组件A', total_count, 0)) AS name5,
-                           MAX(IF(name = '膜框组件B', total_count, 0)) AS name6
-                        FROM production_data
-                        WHERE Date >= CURDATE() - INTERVAL 6 DAY
-                        GROUP BY DATE(Date)
-                        ORDER BY DATE(Date);";
-
+        var query = queryBuilder.ToString();
         var command = new MySqlCommand(query, connection);
         var reader = command.ExecuteReader();
 
@@ -101,19 +151,23 @@ public class DatabaseManager(string connectionString)
 
         reader.Close();
 
-        // Repeat the above process for totalB, rateA, and rateB
-        query = @"SELECT DATE(Date) AS Date,
-                       MAX(IF(name = '胶纸切割', qualified_rate, 0)) AS name1,
-                       MAX(IF(name = '板框焊接', qualified_rate, 0)) AS name2,
-                       MAX(IF(name = '板组件A', qualified_rate, 0)) AS name3,
-                       MAX(IF(name = '板组件B', qualified_rate, 0)) AS name4,
-                       MAX(IF(name = '膜框组件A', qualified_rate, 0)) AS name5,
-                       MAX(IF(name = '膜框组件B', qualified_rate, 0)) AS name6
-                    FROM production_data
-                    WHERE Date >= CURDATE() - INTERVAL 6 DAY
-                    GROUP BY DATE(Date)
-                    ORDER BY DATE(Date);";
+        queryBuilder = new StringBuilder();
+        queryBuilder.Append("SELECT DATE(Date) AS Date,");
+        for (var i = 0; i < ProductionLinesA.Count; i++)
+        {
+            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesA[i]}', qualified_rate, 0)) AS name{i + 1}");
+            if (i < ProductionLinesA.Count - 1)
+            {
+                queryBuilder.Append(',');
+            }
+        }
+        queryBuilder.Append(" FROM production_data");
+        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
+        queryBuilder.Append(" GROUP BY DATE(Date)");
+        queryBuilder.Append(" ORDER BY DATE(Date);");
 
+        query = queryBuilder.ToString();
+        // Repeat the above process for totalB, rateA, and rateB
         command = new MySqlCommand(query, connection);
         reader = command.ExecuteReader();
 
@@ -128,19 +182,23 @@ public class DatabaseManager(string connectionString)
         weeklyData.Add("rateA", rateA);
 
         reader.Close();
+        
+        queryBuilder = new StringBuilder();
+        queryBuilder.Append("SELECT DATE(Date) AS Date,");
+        for (var i = 0; i < ProductionLinesB.Count; i++)
+        {
+            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesB[i]}', total_count, 0)) AS name{i + 1}");
+            if (i < ProductionLinesB.Count - 1)
+            {
+                queryBuilder.Append(',');
+            }
+        }
+        queryBuilder.Append(" FROM production_data");
+        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
+        queryBuilder.Append(" GROUP BY DATE(Date)");
+        queryBuilder.Append(" ORDER BY DATE(Date);");
 
-        query = @"SELECT DATE(Date) AS Date,
-                       MAX(IF(name = '三合一电池A', total_count, 0)) AS name1,
-                       MAX(IF(name = '三合一电池B', total_count, 0)) AS name2,
-                       MAX(IF(name = '三合一电池C', total_count, 0)) AS name3,
-                       MAX(IF(name = '三合一电池检测', total_count, 0)) AS name4,
-                       MAX(IF(name = '总装线', total_count, 0)) AS name5,
-                       MAX(IF(name = '框膜组件检测', total_count, 0)) AS name6
-                    FROM production_data
-                    WHERE Date >= CURDATE() - INTERVAL 6 DAY
-                    GROUP BY DATE(Date)
-                    ORDER BY DATE(Date);";
-
+        query = queryBuilder.ToString();
         command = new MySqlCommand(query, connection);
         reader = command.ExecuteReader();
 
@@ -155,19 +213,23 @@ public class DatabaseManager(string connectionString)
         weeklyData.Add("totalB", totalB);
 
         reader.Close();
-
-        query = @"SELECT DATE(Date) AS Date,
-                       MAX(IF(name = '三合一电池A', qualified_rate, 0)) AS name1,
-                       MAX(IF(name = '三合一电池B', qualified_rate, 0)) AS name2,
-                       MAX(IF(name = '三合一电池C', qualified_rate, 0)) AS name3,
-                       MAX(IF(name = '三合一电池检测', qualified_rate, 0)) AS name4,
-                       MAX(IF(name = '总装线', qualified_rate, 0)) AS name5,
-                       MAX(IF(name = '框膜组件检测', qualified_rate, 0)) AS name6
-                    FROM production_data
-                    WHERE Date >= CURDATE() - INTERVAL 6 DAY
-                    GROUP BY DATE(Date)
-                    ORDER BY DATE(Date);";
-
+        
+        queryBuilder = new StringBuilder();
+        queryBuilder.Append("SELECT DATE(Date) AS Date,");
+        for (var i = 0; i < ProductionLinesB.Count; i++)
+        {
+            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesB[i]}', qualified_rate, 0)) AS name{i + 1}");
+            if (i < ProductionLinesB.Count - 1)
+            {
+                queryBuilder.Append(',');
+            }
+        }
+        queryBuilder.Append(" FROM production_data");
+        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
+        queryBuilder.Append(" GROUP BY DATE(Date)");
+        queryBuilder.Append(" ORDER BY DATE(Date);");
+        query = queryBuilder.ToString();
+        
         command = new MySqlCommand(query, connection);
         reader = command.ExecuteReader();
 

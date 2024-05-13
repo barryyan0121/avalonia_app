@@ -29,8 +29,8 @@ public class MainViewModel : ViewModelBase
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
 
-    public AvaloniaList<ProductionData> DailyData { get; private set; }
-    public Dictionary<string, List<List<double>>> WeeklyData { get; private set; }
+    public AvaloniaList<ProductionData> DailyData { get; private set; } = [];
+    public Dictionary<string, List<List<double>>> WeeklyData { get; private set; } = [];
 
     public DateTime Today
     {
@@ -46,8 +46,8 @@ public class MainViewModel : ViewModelBase
 
 
     public Axis[] XAxes { get; set; } =
-    {
-        new()
+    [
+        new Axis
         {
             Name = "生产日期",
             Labels = ChartDataGenerator.GetLastSevenDays(),
@@ -57,7 +57,7 @@ public class MainViewModel : ViewModelBase
             TextSize = 10,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 }
         }
-    };
+    ];
 
     public Axis[] YProductionAxes { get; set; } =
     [
@@ -96,7 +96,7 @@ public class MainViewModel : ViewModelBase
         Color = new SKColor(255, 255, 255)
     };
 
-    public static List<string> ProductionLineNames => ChartDataGenerator.ProductionLinesTotal;
+    public static List<string> ProductionLineNames => DatabaseManager.ProductionLinesTotal;
 
     private async Task CheckForDataChanges(DatabaseManager databaseManager)
     {
@@ -115,10 +115,10 @@ public class MainViewModel : ViewModelBase
         // Reload data from the database
         DailyData = databaseManager.LoadData();
         WeeklyData = databaseManager.LoadWeeklyData();
-        ChartDataGenerator.GenerateSeries(TotalSeriesA, WeeklyData["totalA"], ChartDataGenerator.ProductionLinesA);
-        ChartDataGenerator.GenerateSeries(TotalSeriesB, WeeklyData["totalB"], ChartDataGenerator.ProductionLinesB);
-        ChartDataGenerator.GenerateSeries(RateSeriesA, WeeklyData["rateA"], ChartDataGenerator.ProductionLinesA);
-        ChartDataGenerator.GenerateSeries(RateSeriesB, WeeklyData["rateB"], ChartDataGenerator.ProductionLinesB);
+        ChartDataGenerator.GenerateSeries(TotalSeriesA, WeeklyData["totalA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
     }
 }
