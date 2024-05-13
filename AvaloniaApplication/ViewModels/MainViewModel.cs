@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Collections;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using AvaloniaApplication.Models;
+using AvaloniaApplication.Views;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -13,6 +17,7 @@ namespace AvaloniaApplication.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    private UserControl _currentView = new PrimaryView();
     private DateTime _today = DateTime.Today;
 
     public MainViewModel()
@@ -97,6 +102,28 @@ public class MainViewModel : ViewModelBase
     };
 
     public static List<string> ProductionLineNames => DatabaseManager.ProductionLinesTotal;
+
+    public UserControl CurrentView
+    {
+        get => _currentView;
+        set => this.RaiseAndSetIfChanged(ref _currentView, value);
+    }
+
+    public static void ExitCommand()
+    {
+        // Close the application
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            desktop.Shutdown();
+    }
+
+    public void SwitchViewCommand()
+    {
+        // Switch between the main view and the secondary view
+        if (CurrentView is PrimaryView)
+            CurrentView = new SecondaryView();
+        else
+            CurrentView = new PrimaryView();
+    }
 
     private async Task CheckForDataChanges(DatabaseManager databaseManager)
     {
