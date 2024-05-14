@@ -50,18 +50,17 @@ public class DatabaseManager
 
     public readonly Dictionary<string, ObservableValue> ProgressMap = new();
 
-    public readonly Dictionary<string, double> RateMap = new();
+    public readonly Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> RateMap = new();
 
     public DatabaseManager(string connectionString)
     {
         _connectionString = connectionString;
         foreach (var line in ProductionLinesTotal)
         {
-            RateMap[line] = 0.0;
-            ProgressMap[line] = new ObservableValue
-            {
-                Value = 0
-            };
+            RateMap[line] =
+                new KeyValuePair<ObservableValue, ObservableValue>(new ObservableValue(0), new ObservableValue(1));
+
+            ProgressMap[line] = new ObservableValue(0);
         }
     }
 
@@ -91,7 +90,8 @@ public class DatabaseManager
                 Date = reader.GetDateTime("date")
             };
 
-            RateMap[productionData.Name] = productionData.QualifiedRate;
+            RateMap[productionData.Name].Key.Value = productionData.QualifiedRate;
+            RateMap[productionData.Name].Value.Value = Math.Round(1 - productionData.QualifiedRate, 3);
             ProgressMap[productionData.Name].Value =
                 Math.Round((double)totalCount / productionData.TargetCount * 100, 3);
 

@@ -31,6 +31,7 @@ public class MainViewModel : ViewModelBase
         var databaseManager = new DatabaseManager(connectionString);
         RefreshData(databaseManager);
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
+        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
@@ -149,7 +150,5 @@ public class MainViewModel : ViewModelBase
         ChartDataGenerator.GenerateLineSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
         ChartDataGenerator.GenerateLineSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
         ChartDataGenerator.GenerateLineSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
-        // ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
     }
 }

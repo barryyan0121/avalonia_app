@@ -41,38 +41,30 @@ public static class ChartDataGenerator
             }
     }
 
-    public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names, Dictionary<string, double> map)
+    public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names,
+        Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> map)
     {
         for (var i = 0; i < seriesArray.Length; i++)
         {
             var series = seriesArray[i];
             var name = names[i];
-            if (!map.TryGetValue(name, out var rate)) continue;
-            if (series[0] is PieSeries<double>)
+            if (!map.TryGetValue(name, out var pair)) continue;
+            var rate1 = pair.Key;
+            var rate2 = pair.Value;
+            series[0] = new PieSeries<ObservableValue>
             {
-                series[0].Values = new[] { rate };
-                series[1].Values = new[] { Math.Round(1 - rate, 5) };
-            }
-            else
+                Values = new ObservableCollection<ObservableValue> { rate1 },
+                Name = "合格",
+                DataLabelsPaint = new SolidColorPaint(SKColors.White),
+                DataLabelsSize = 20,
+                DataLabelsPosition = PolarLabelsPosition.ChartCenter,
+                DataLabelsFormatter = point => (point.Coordinate.PrimaryValue * 100).ToString("0.0") + "% 合格"
+            };
+            series[1] = new PieSeries<ObservableValue>
             {
-                var pie1 = new PieSeries<double>
-                {
-                    Values = new[] { rate },
-                    Name = "合格",
-                    DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                    DataLabelsSize = 20,
-                    DataLabelsPosition = PolarLabelsPosition.ChartCenter,
-                    DataLabelsFormatter = point => (point.Coordinate.PrimaryValue * 100).ToString("0.0") + "% 合格"
-                };
-                series[0] = pie1;
-
-                var pie2 = new PieSeries<double>
-                {
-                    Values = new[] { Math.Round(1 - rate, 5) },
-                    Name = "不合格"
-                };
-                series[1] = pie2;
-            }
+                Values = new ObservableCollection<ObservableValue> { rate2 },
+                Name = "不合格"
+            };
         }
     }
 
