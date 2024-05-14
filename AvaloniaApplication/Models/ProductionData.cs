@@ -10,5 +10,7 @@ public class ProductionData
     public int DefectiveCount { get; set; }
     public double QualifiedRate { get; set; }
     public int TotalCount { get; set; }
+
+    public int TargetCount { get; set; }
     public DateTime Date { get; set; }
 }

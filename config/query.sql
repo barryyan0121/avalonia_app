@@ -5,20 +5,18 @@ CREATE TABLE IF NOT EXISTS production_data
     name            VARCHAR(255),
     qualified_count INT,
     defective_count INT,
-    qualified_rate  DOUBLE,
-    total_count     INT,
+    target_count    INT,
     date            DATETIME
 ) DEFAULT CHARSET = utf8;
 
 
 -- Insert sample data for the past seven days with distinct values
-INSERT INTO production_data (name, qualified_count, defective_count, qualified_rate, total_count, date)
+INSERT INTO production_data (name, qualified_count, defective_count, target_count, date)
 SELECT name,
-       FLOOR(RAND() * 30) + 80      AS qualified_count,
-       FLOOR(RAND() * 10)           AS defective_count,
-       ROUND(RAND() * 0.1 + 0.9, 2) AS qualified_rate,
-       FLOOR(RAND() * 30) + 100     AS total_count,
-       CURDATE() - INTERVAL i DAY   AS date
+       FLOOR(RAND() * 30) + 80    AS qualified_count,
+       FLOOR(RAND() * 10)         AS defective_count,
+       FLOOR(RAND() * 30) + 100   AS target_count,
+       CURDATE() - INTERVAL i DAY AS date
 FROM (SELECT '胶纸切割' AS name
       UNION ALL
       SELECT '板框焊接'
@@ -55,25 +53,3 @@ FROM (SELECT '胶纸切割' AS name
                      SELECT 5
                      UNION ALL
                      SELECT 6) AS days;
-
--- 启用事件调度器
-SET GLOBAL event_scheduler = ON;
-
--- 创建一个每天执行一次的事件
-DELIMITER //
-
-CREATE EVENT UpdateQualificationRate
-    ON SCHEDULE
-        EVERY 1 HOUR
-            STARTS CURRENT_TIMESTAMP()
-    COMMENT 'Update qualification rate daily'
-    DO
-    BEGIN
-        -- 在这里编写更新合格率字段的SQL语句
-        UPDATE production_data
-        SET total_count    = qualified_count + defective_count,
-            qualified_rate = (qualified_count / total_count)
-        WHERE name LIKE '%';
-    END//
-
-DELIMITER ;

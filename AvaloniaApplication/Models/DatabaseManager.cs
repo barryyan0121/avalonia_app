@@ -9,16 +9,6 @@ namespace AvaloniaApplication.Models;
 
 public class DatabaseManager
 {
-    public DatabaseManager(string connectionString)
-    {
-        this._connectionString = connectionString;
-        foreach (var line in ProductionLinesTotal)
-        {
-            RateMap[line] = 0.0;
-        }
-    }
-    
-    private readonly string _connectionString;
     public static readonly List<string> ProductionLinesA =
     [
         "胶纸切割",
@@ -55,7 +45,15 @@ public class DatabaseManager
         "框膜组件检测"
     ];
 
+    private readonly string _connectionString;
+
     public readonly Dictionary<string, double> RateMap = new();
+
+    public DatabaseManager(string connectionString)
+    {
+        _connectionString = connectionString;
+        foreach (var line in ProductionLinesTotal) RateMap[line] = 0.0;
+    }
 
     public AvaloniaList<ProductionData> LoadData()
     {
@@ -68,16 +66,21 @@ public class DatabaseManager
 
         while (reader.Read())
         {
+            var qualifiedCount = reader.GetInt32("qualified_count");
+            var defectiveCount = reader.GetInt32("defective_count");
+            var totalCount = qualifiedCount + defectiveCount;
             var productionData = new ProductionData
             {
                 Id = reader.GetInt32("id"),
                 Name = reader.GetString("name"),
-                QualifiedCount = reader.GetInt32("qualified_count"),
-                DefectiveCount = reader.GetInt32("defective_count"),
-                QualifiedRate = Math.Round(reader.GetDouble("qualified_rate"), 5),
-                TotalCount = reader.GetInt32("total_count"),
+                QualifiedCount = qualifiedCount,
+                DefectiveCount = defectiveCount,
+                QualifiedRate = Math.Round((double)qualifiedCount / totalCount, 5),
+                TotalCount = totalCount,
+                TargetCount = reader.GetInt32("target_count"),
                 Date = reader.GetDateTime("date")
             };
+
             RateMap[productionData.Name] = productionData.QualifiedRate;
 
             data.Add(productionData);
@@ -124,16 +127,22 @@ public class DatabaseManager
         queryBuilder.Append("SELECT DATE(Date) AS Date,");
         for (var i = 0; i < ProductionLinesA.Count; i++)
         {
-            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesA[i]}', total_count, 0)) AS name{i + 1}");
-            if (i < ProductionLinesA.Count - 1)
-            {
-                queryBuilder.Append(',');
-            }
+            var line = ProductionLinesA[i];
+            queryBuilder.Append($@"
+                MAX(IF(name = '{line}', qualified_count + defective_count, 0)) AS total_count{i + 1},
+                MAX(IF(name = '{line}', 
+                       CASE 
+                           WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
+                           ELSE 0 
+                       END, 0)) AS qualified_rate{i + 1}");
+            if (i < ProductionLinesA.Count - 1) queryBuilder.Append(',');
         }
-        queryBuilder.Append(" FROM production_data");
-        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
-        queryBuilder.Append(" GROUP BY DATE(Date)");
-        queryBuilder.Append(" ORDER BY DATE(Date);");
+
+        queryBuilder.Append(@"
+             FROM production_data
+             WHERE Date >= CURDATE() - INTERVAL 6 DAY
+             GROUP BY DATE(Date)
+             ORDER BY DATE(Date);");
 
         var query = queryBuilder.ToString();
         var command = new MySqlCommand(query, connection);
@@ -144,59 +153,36 @@ public class DatabaseManager
             {
                 var date = reader.GetDateTime("Date").Date;
                 var dataIndex = expectedDates.IndexOf(date);
-                totalA[i][dataIndex] = reader.GetDouble($"name{i + 1}");
+                totalA[i][dataIndex] = reader.GetDouble($"total_count{i + 1}");
+                rateA[i][dataIndex] = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
 
         weeklyData.Add("totalA", totalA);
-
-        reader.Close();
-
-        queryBuilder = new StringBuilder();
-        queryBuilder.Append("SELECT DATE(Date) AS Date,");
-        for (var i = 0; i < ProductionLinesA.Count; i++)
-        {
-            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesA[i]}', qualified_rate, 0)) AS name{i + 1}");
-            if (i < ProductionLinesA.Count - 1)
-            {
-                queryBuilder.Append(',');
-            }
-        }
-        queryBuilder.Append(" FROM production_data");
-        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
-        queryBuilder.Append(" GROUP BY DATE(Date)");
-        queryBuilder.Append(" ORDER BY DATE(Date);");
-
-        query = queryBuilder.ToString();
-        // Repeat the above process for totalB, rateA, and rateB
-        command = new MySqlCommand(query, connection);
-        reader = command.ExecuteReader();
-
-        while (reader.Read())
-            for (var i = 0; i < 6; i++)
-            {
-                var date = reader.GetDateTime("Date").Date;
-                var dataIndex = expectedDates.IndexOf(date);
-                rateA[i][dataIndex] = Math.Round(reader.GetDouble($"name{i + 1}"), 2);
-            }
-
         weeklyData.Add("rateA", rateA);
 
         reader.Close();
-        
+
         queryBuilder = new StringBuilder();
         queryBuilder.Append("SELECT DATE(Date) AS Date,");
+
         for (var i = 0; i < ProductionLinesB.Count; i++)
         {
-            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesB[i]}', total_count, 0)) AS name{i + 1}");
-            if (i < ProductionLinesB.Count - 1)
-            {
-                queryBuilder.Append(',');
-            }
+            var line = ProductionLinesB[i];
+            queryBuilder.Append($@"
+                MAX(IF(name = '{line}', qualified_count + defective_count, 0)) AS total_count{i + 1},
+                MAX(IF(name = '{line}', 
+                       CASE 
+                           WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
+                           ELSE 0 
+                       END, 0)) AS qualified_rate{i + 1}");
+            if (i < ProductionLinesB.Count - 1) queryBuilder.Append(',');
         }
-        queryBuilder.Append(" FROM production_data");
-        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
-        queryBuilder.Append(" GROUP BY DATE(Date)");
-        queryBuilder.Append(" ORDER BY DATE(Date);");
+
+        queryBuilder.Append(@"
+             FROM production_data
+             WHERE Date >= CURDATE() - INTERVAL 6 DAY
+             GROUP BY DATE(Date)
+             ORDER BY DATE(Date);");
 
         query = queryBuilder.ToString();
         command = new MySqlCommand(query, connection);
@@ -207,40 +193,11 @@ public class DatabaseManager
             {
                 var date = reader.GetDateTime("Date").Date;
                 var dataIndex = expectedDates.IndexOf(date);
-                totalB[i][dataIndex] = reader.GetDouble($"name{i + 1}");
+                totalB[i][dataIndex] = reader.GetDouble($"total_count{i + 1}");
+                rateB[i][dataIndex] = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
 
         weeklyData.Add("totalB", totalB);
-
-        reader.Close();
-        
-        queryBuilder = new StringBuilder();
-        queryBuilder.Append("SELECT DATE(Date) AS Date,");
-        for (var i = 0; i < ProductionLinesB.Count; i++)
-        {
-            queryBuilder.Append($"MAX(IF(name = '{ProductionLinesB[i]}', qualified_rate, 0)) AS name{i + 1}");
-            if (i < ProductionLinesB.Count - 1)
-            {
-                queryBuilder.Append(',');
-            }
-        }
-        queryBuilder.Append(" FROM production_data");
-        queryBuilder.Append(" WHERE Date >= CURDATE() - INTERVAL 6 DAY");
-        queryBuilder.Append(" GROUP BY DATE(Date)");
-        queryBuilder.Append(" ORDER BY DATE(Date);");
-        query = queryBuilder.ToString();
-        
-        command = new MySqlCommand(query, connection);
-        reader = command.ExecuteReader();
-
-        while (reader.Read())
-            for (var i = 0; i < 6; i++)
-            {
-                var date = reader.GetDateTime("Date").Date;
-                var dataIndex = expectedDates.IndexOf(date);
-                rateB[i][dataIndex] = Math.Round(reader.GetDouble($"name{i + 1}"), 2);
-            }
-
         weeklyData.Add("rateB", rateB);
 
         reader.Close();
