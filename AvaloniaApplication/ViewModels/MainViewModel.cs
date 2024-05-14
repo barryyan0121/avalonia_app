@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
@@ -8,6 +9,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using AvaloniaApplication.Models;
 using AvaloniaApplication.Views;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
@@ -32,12 +34,18 @@ public class MainViewModel : ViewModelBase
         RefreshData(databaseManager);
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, WeeklyData["totalA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
 
     public AvaloniaList<ProductionData> DailyData { get; private set; } = [];
-    public Dictionary<string, List<List<double>>> WeeklyData { get; private set; } = [];
+
+    public Dictionary<string, ObservableCollection<ObservableCollection<ObservableValue>>> WeeklyData { get; set; } =
+        [];
 
     public DateTime Today
     {
@@ -45,10 +53,10 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _today, value);
     }
 
-    public ISeries[] TotalSeriesA { get; set; } = new ISeries[6];
-    public ISeries[] TotalSeriesB { get; set; } = new ISeries[6];
-    public ISeries[] RateSeriesA { get; set; } = new ISeries[6];
-    public ISeries[] RateSeriesB { get; set; } = new ISeries[6];
+    public ObservableCollection<ISeries> TotalSeriesA { get; set; } = [];
+    public ObservableCollection<ISeries> TotalSeriesB { get; set; } = [];
+    public ObservableCollection<ISeries> RateSeriesA { get; set; } = [];
+    public ObservableCollection<ISeries> RateSeriesB { get; set; } = [];
     public ISeries[][] PieSeries { get; set; } = new ISeries[12][];
 
     public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
@@ -135,8 +143,6 @@ public class MainViewModel : ViewModelBase
         {
             // Reload data from the database
             RefreshData(databaseManager);
-            this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
-            this.RaisePropertyChanged(nameof(WeeklyData));
             await Task.Delay(TimeSpan.FromSeconds(5)); // Wait for 5 seconds before reloading data again
         }
     }
@@ -146,9 +152,7 @@ public class MainViewModel : ViewModelBase
         // Reload data from the database
         DailyData = databaseManager.LoadData();
         WeeklyData = databaseManager.LoadWeeklyData();
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, WeeklyData["totalA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
+        this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
+        this.RaisePropertyChanged(nameof(WeeklyData));
     }
 }

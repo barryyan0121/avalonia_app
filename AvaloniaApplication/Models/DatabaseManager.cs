@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using Avalonia.Collections;
@@ -101,7 +102,7 @@ public class DatabaseManager
         return data;
     }
 
-    public Dictionary<string, List<List<double>>> LoadWeeklyData()
+    public Dictionary<string, ObservableCollection<ObservableCollection<ObservableValue>>> LoadWeeklyData()
     {
         using var connection = new MySqlConnection(_connectionString);
         connection.Open();
@@ -111,11 +112,11 @@ public class DatabaseManager
             .Select(offset => DateTime.Today.AddDays(offset).Date)
             .ToList();
 
-        var weeklyData = new Dictionary<string, List<List<double>>>();
-        var totalA = new List<List<double>>();
-        var totalB = new List<List<double>>();
-        var rateA = new List<List<double>>();
-        var rateB = new List<List<double>>();
+        var weeklyData = new Dictionary<string, ObservableCollection<ObservableCollection<ObservableValue>>>();
+        var totalA = new ObservableCollection<ObservableCollection<ObservableValue>>();
+        var totalB = new ObservableCollection<ObservableCollection<ObservableValue>>();
+        var rateA = new ObservableCollection<ObservableCollection<ObservableValue>>();
+        var rateB = new ObservableCollection<ObservableCollection<ObservableValue>>();
 
         for (var i = 0; i < 6; i++)
         {
@@ -129,10 +130,10 @@ public class DatabaseManager
         foreach (var _ in expectedDates)
             for (var i = 0; i < 6; i++)
             {
-                totalA[i].Add(0);
-                totalB[i].Add(0);
-                rateA[i].Add(0);
-                rateB[i].Add(0);
+                totalA[i].Add(new ObservableValue(0.0));
+                totalB[i].Add(new ObservableValue(0.0));
+                rateA[i].Add(new ObservableValue(0.0));
+                rateB[i].Add(new ObservableValue(0.0));
             }
 
         var queryBuilder = new StringBuilder();
@@ -165,8 +166,8 @@ public class DatabaseManager
             {
                 var date = reader.GetDateTime("Date").Date;
                 var dataIndex = expectedDates.IndexOf(date);
-                totalA[i][dataIndex] = reader.GetDouble($"total_count{i + 1}");
-                rateA[i][dataIndex] = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
+                totalA[i][dataIndex].Value = reader.GetDouble($"total_count{i + 1}");
+                rateA[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
 
         weeklyData.Add("totalA", totalA);
@@ -205,8 +206,8 @@ public class DatabaseManager
             {
                 var date = reader.GetDateTime("Date").Date;
                 var dataIndex = expectedDates.IndexOf(date);
-                totalB[i][dataIndex] = reader.GetDouble($"total_count{i + 1}");
-                rateB[i][dataIndex] = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
+                totalB[i][dataIndex].Value = reader.GetDouble($"total_count{i + 1}");
+                rateB[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
 
         weeklyData.Add("totalB", totalB);
