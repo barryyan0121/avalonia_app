@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Avalonia.Collections;
+using LiveChartsCore.Defaults;
 using MySql.Data.MySqlClient;
 
 namespace AvaloniaApplication.Models;
@@ -47,12 +48,21 @@ public class DatabaseManager
 
     private readonly string _connectionString;
 
+    public readonly Dictionary<string, ObservableValue> ProgressMap = new();
+
     public readonly Dictionary<string, double> RateMap = new();
 
     public DatabaseManager(string connectionString)
     {
         _connectionString = connectionString;
-        foreach (var line in ProductionLinesTotal) RateMap[line] = 0.0;
+        foreach (var line in ProductionLinesTotal)
+        {
+            RateMap[line] = 0.0;
+            ProgressMap[line] = new ObservableValue
+            {
+                Value = 0
+            };
+        }
     }
 
     public AvaloniaList<ProductionData> LoadData()
@@ -75,13 +85,15 @@ public class DatabaseManager
                 Name = reader.GetString("name"),
                 QualifiedCount = qualifiedCount,
                 DefectiveCount = defectiveCount,
-                QualifiedRate = Math.Round((double)qualifiedCount / totalCount, 5),
+                QualifiedRate = Math.Round((double)qualifiedCount / totalCount, 3),
                 TotalCount = totalCount,
                 TargetCount = reader.GetInt32("target_count"),
                 Date = reader.GetDateTime("date")
             };
 
             RateMap[productionData.Name] = productionData.QualifiedRate;
+            ProgressMap[productionData.Name].Value =
+                Math.Round((double)totalCount / productionData.TargetCount * 100, 3);
 
             data.Add(productionData);
         }

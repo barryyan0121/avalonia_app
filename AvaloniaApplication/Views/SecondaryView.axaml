@@ -117,11 +117,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="1" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[0]}"
+                               Series="{Binding GaugeSeries[0]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="2"
                        HorizontalAlignment="Center"

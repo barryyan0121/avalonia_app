@@ -30,6 +30,7 @@ public class MainViewModel : ViewModelBase
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
         var databaseManager = new DatabaseManager(connectionString);
         RefreshData(databaseManager);
+        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
@@ -48,6 +49,8 @@ public class MainViewModel : ViewModelBase
     public ISeries[] RateSeriesA { get; set; } = new ISeries[6];
     public ISeries[] RateSeriesB { get; set; } = new ISeries[6];
     public ISeries[][] PieSeries { get; set; } = new ISeries[12][];
+
+    public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
 
 
     public Axis[] XAxes { get; set; } =
@@ -142,10 +145,11 @@ public class MainViewModel : ViewModelBase
         // Reload data from the database
         DailyData = databaseManager.LoadData();
         WeeklyData = databaseManager.LoadWeeklyData();
-        ChartDataGenerator.GenerateSeries(TotalSeriesA, WeeklyData["totalA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, WeeklyData["totalA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
+        // ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
     }
 }

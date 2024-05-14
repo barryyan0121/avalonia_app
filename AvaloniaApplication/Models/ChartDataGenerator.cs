@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Extensions;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 
@@ -11,7 +13,7 @@ namespace AvaloniaApplication.Models;
 
 public static class ChartDataGenerator
 {
-    public static void GenerateSeries(ISeries[] seriesArray, List<List<double>> data, List<string> labels)
+    public static void GenerateLineSeries(ISeries[] seriesArray, List<List<double>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)
             // 如果给定的 seriesArray 已经初始化，则更新对应索引处的 ISeries 对象的 Values 属性
@@ -71,6 +73,25 @@ public static class ChartDataGenerator
                 };
                 series[1] = pie2;
             }
+        }
+    }
+
+    public static void GenerateGaugeSeries(IEnumerable<ISeries>[] seriesArray, List<string> names,
+        Dictionary<string, ObservableValue> map)
+    {
+        for (var i = 0; i < seriesArray.Length; i++)
+        {
+            var name = names[i];
+            if (!map.TryGetValue(name, out var rate)) continue;
+
+            seriesArray[i] = GaugeGenerator.BuildSolidGauge(
+                new GaugeItem(rate, s =>
+                {
+                    s.MaxRadialColumnWidth = 40;
+                    s.DataLabelsSize = 20;
+                    s.DataLabelsPaint = new SolidColorPaint(SKColors.White);
+                    s.DataLabelsFormatter = point => point.Coordinate.PrimaryValue.ToString("0.0") + "%";
+                }));
         }
     }
 
