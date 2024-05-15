@@ -14,7 +14,7 @@ namespace AvaloniaApplication.Models;
 public static class ChartDataGenerator
 {
     public static void GenerateLineSeries(ObservableCollection<ISeries> seriesArray,
-        ObservableCollection<ObservableCollection<ObservableValue>> data, List<string> labels)
+        List<ObservableCollection<ObservableValue>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)
             seriesArray.Add(new LineSeries<ObservableValue>

@@ -31,21 +31,22 @@ public class MainViewModel : ViewModelBase
         const string connectionString =
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
         var databaseManager = new DatabaseManager(connectionString);
+        WeeklyData = databaseManager.WeeklyDataMap;
         RefreshData(databaseManager);
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, WeeklyData["totalA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, WeeklyData["totalB"], DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesA, WeeklyData["rateA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesB, WeeklyData["rateB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, databaseManager.WeeklyDataMap["totalA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, databaseManager.WeeklyDataMap["totalB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, databaseManager.WeeklyDataMap["rateA"], DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, databaseManager.WeeklyDataMap["rateB"], DatabaseManager.ProductionLinesB);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
 
-    public AvaloniaList<ProductionData> DailyData { get; private set; } = [];
+    public AvaloniaList<ProductionData> DailyData { get; set; } = [];
 
-    public Dictionary<string, ObservableCollection<ObservableCollection<ObservableValue>>> WeeklyData { get; set; } =
-        [];
+    private Dictionary<string, List<ObservableCollection<ObservableValue>>> WeeklyData { get; }
+
 
     public DateTime Today
     {
@@ -151,8 +152,7 @@ public class MainViewModel : ViewModelBase
     {
         // Reload data from the database
         DailyData = databaseManager.LoadData();
-        WeeklyData = databaseManager.LoadWeeklyData();
+        databaseManager.LoadWeeklyData();
         this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
-        this.RaisePropertyChanged(nameof(WeeklyData));
     }
 }

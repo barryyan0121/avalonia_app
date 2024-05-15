@@ -53,6 +53,8 @@ public class DatabaseManager
 
     public readonly Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> RateMap = new();
 
+    public readonly Dictionary<string, List<ObservableCollection<ObservableValue>>> WeeklyDataMap = new();
+
     public DatabaseManager(string connectionString)
     {
         _connectionString = connectionString;
@@ -102,7 +104,7 @@ public class DatabaseManager
         return data;
     }
 
-    public Dictionary<string, ObservableCollection<ObservableCollection<ObservableValue>>> LoadWeeklyData()
+    public void LoadWeeklyData()
     {
         using var connection = new MySqlConnection(_connectionString);
         connection.Open();
@@ -112,11 +114,10 @@ public class DatabaseManager
             .Select(offset => DateTime.Today.AddDays(offset).Date)
             .ToList();
 
-        var weeklyData = new Dictionary<string, ObservableCollection<ObservableCollection<ObservableValue>>>();
-        var totalA = new ObservableCollection<ObservableCollection<ObservableValue>>();
-        var totalB = new ObservableCollection<ObservableCollection<ObservableValue>>();
-        var rateA = new ObservableCollection<ObservableCollection<ObservableValue>>();
-        var rateB = new ObservableCollection<ObservableCollection<ObservableValue>>();
+        var totalA = new List<ObservableCollection<ObservableValue>>();
+        var totalB = new List<ObservableCollection<ObservableValue>>();
+        var rateA = new List<ObservableCollection<ObservableValue>>();
+        var rateB = new List<ObservableCollection<ObservableValue>>();
 
         for (var i = 0; i < 6; i++)
         {
@@ -170,8 +171,8 @@ public class DatabaseManager
                 rateA[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
 
-        weeklyData.Add("totalA", totalA);
-        weeklyData.Add("rateA", rateA);
+        WeeklyDataMap["totalA"] = totalA;
+        WeeklyDataMap["rateA"] = rateA;
 
         reader.Close();
 
@@ -210,11 +211,9 @@ public class DatabaseManager
                 rateB[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
 
-        weeklyData.Add("totalB", totalB);
-        weeklyData.Add("rateB", rateB);
+        WeeklyDataMap["totalB"] = totalB;
+        WeeklyDataMap["rateB"] = rateB;
 
         reader.Close();
-
-        return weeklyData;
     }
 }
