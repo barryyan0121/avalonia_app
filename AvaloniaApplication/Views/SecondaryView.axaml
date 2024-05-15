@@ -129,11 +129,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="2" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[1]}"
+                               Series="{Binding GaugeSeries[1]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="3"
                        HorizontalAlignment="Center"
@@ -142,11 +141,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="3" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[2]}"
+                               Series="{Binding GaugeSeries[2]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="4"
                        HorizontalAlignment="Center"
@@ -155,11 +153,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="4" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[3]}"
+                               Series="{Binding GaugeSeries[3]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="5"
                        HorizontalAlignment="Center"
@@ -168,11 +165,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="5" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[4]}"
+                               Series="{Binding GaugeSeries[4]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="6"
                        HorizontalAlignment="Center"
@@ -181,11 +177,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="6" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[5]}"
+                               Series="{Binding GaugeSeries[5]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="1"
                        HorizontalAlignment="Center"
@@ -194,11 +189,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="1" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[6]}"
+                               Series="{Binding GaugeSeries[6]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="2"
                        HorizontalAlignment="Center"
@@ -207,11 +201,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="2" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[7]}"
+                               Series="{Binding GaugeSeries[7]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="3"
                        HorizontalAlignment="Center"
@@ -220,11 +213,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="3" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[8]}"
+                               Series="{Binding GaugeSeries[8]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="4"
                        HorizontalAlignment="Center"
@@ -233,11 +225,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="4" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[9]}"
+                               Series="{Binding GaugeSeries[9]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="5"
                        HorizontalAlignment="Center"
@@ -246,11 +237,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="5" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[10]}"
+                               Series="{Binding GaugeSeries[10]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="6"
                        HorizontalAlignment="Center"
@@ -259,11 +249,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="6" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[11]}"
+                               Series="{Binding GaugeSeries[11]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
         </Grid>
     </DockPanel>
