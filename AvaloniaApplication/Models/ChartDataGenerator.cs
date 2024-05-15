@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using LiveChartsCore;
+using LiveChartsCore.ConditionalDraw;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Drawing;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Extensions;
@@ -96,5 +99,38 @@ public static class ChartDataGenerator
         }
 
         return dates;
+    }
+
+    public static void GenerateRowSeries(ISeries[] series, Dictionary<string, ObservableValue> map)
+    {
+        var paints = ProgressInfo.Paints;
+        var length = map.Count;
+        var data = new ProgressInfo[length];
+        for (var i = 0; i < length; i++)
+        {
+            var pair = map.ElementAt(i);
+            data[i] = new ProgressInfo(pair.Key, (double)pair.Value.Value!, paints[i % 9]);
+        }
+
+        var rowSeries = new RowSeries<ProgressInfo>
+        {
+            Values = data.OrderBy(x => x.Value).ToArray(),
+            DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
+            DataLabelsPosition = DataLabelsPosition.End,
+            DataLabelsTranslate = new LvcPoint(-1, 0),
+            DataLabelsFormatter = point => $"{point.Model!.Name} {Math.Round(point.Coordinate.PrimaryValue)}%",
+            DataLabelsSize = 10,
+            MaxBarWidth = 50,
+            Padding = 10
+        }.OnPointMeasured(point =>
+        {
+            if (point.Visual is null)
+            {
+                return;
+            }
+
+            point.Visual.Fill = point.Model!.Paint;
+        });
+        series[0] = rowSeries;
     }
 }

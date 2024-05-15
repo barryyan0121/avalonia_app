@@ -9,7 +9,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using AvaloniaApplication.Models;
 using AvaloniaApplication.Views;
 using LiveChartsCore;
-using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
@@ -34,7 +33,6 @@ public class MainViewModel : ViewModelBase
         const string connectionString =
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
         var databaseManager = new DatabaseManager(connectionString);
-        WeeklyData = databaseManager.WeeklyDataMap;
         RefreshData(databaseManager);
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
@@ -46,13 +44,12 @@ public class MainViewModel : ViewModelBase
             DatabaseManager.ProductionLinesA);
         ChartDataGenerator.GenerateLineSeries(RateSeriesB, databaseManager.WeeklyDataMap["rateB"],
             DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateRowSeries(RaceSeries, databaseManager.ProgressMap);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
 
     public AvaloniaList<ProductionData> DailyData { get; set; } = [];
-
-    private Dictionary<string, List<ObservableCollection<ObservableValue>>> WeeklyData { get; }
 
 
     public DateTime Today
@@ -66,6 +63,8 @@ public class MainViewModel : ViewModelBase
     public ObservableCollection<ISeries> RateSeriesA { get; set; } = [];
     public ObservableCollection<ISeries> RateSeriesB { get; set; } = [];
     public ISeries[][] PieSeries { get; set; } = new ISeries[12][];
+
+    public ISeries[] RaceSeries { get; set; } = new ISeries[1];
 
     public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
 
@@ -112,7 +111,8 @@ public class MainViewModel : ViewModelBase
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
             {
                 StrokeThickness = 2
-            }
+            },
+            MaxLimit = 1.001
         }
     ];
 
@@ -157,7 +157,7 @@ public class MainViewModel : ViewModelBase
         {
             // Reload data from the database
             RefreshData(databaseManager);
-            await Task.Delay(TimeSpan.FromSeconds(5)); // Wait for 5 seconds before reloading data again
+            await Task.Delay(TimeSpan.FromSeconds(3)); // Wait for 3 seconds before reloading data again
         }
     }
 
