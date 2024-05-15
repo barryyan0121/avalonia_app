@@ -49,6 +49,11 @@ public class DatabaseManager
 
     private readonly string _connectionString;
 
+    // Create a list of all expected dates for the last 7 days
+    private readonly List<DateTime> _expectedDates = Enumerable.Range(-6, 7)
+        .Select(offset => DateTime.Today.AddDays(offset).Date)
+        .ToList();
+
     public readonly Dictionary<string, ObservableValue> ProgressMap = new();
 
     public readonly Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> RateMap = new();
@@ -65,6 +70,40 @@ public class DatabaseManager
 
             ProgressMap[line] = new ObservableValue(0);
         }
+
+        InitializeWeeklyData();
+    }
+
+    private void InitializeWeeklyData()
+    {
+        var totalA = new List<ObservableCollection<ObservableValue>>();
+        var totalB = new List<ObservableCollection<ObservableValue>>();
+        var rateA = new List<ObservableCollection<ObservableValue>>();
+        var rateB = new List<ObservableCollection<ObservableValue>>();
+
+
+        for (var i = 0; i < 6; i++)
+        {
+            totalA.Add([]);
+            totalB.Add([]);
+            rateA.Add([]);
+            rateB.Add([]);
+        }
+
+        // Initialize totalA with 0s for all expected dates
+        foreach (var _ in _expectedDates)
+            for (var i = 0; i < 6; i++)
+            {
+                totalA[i].Add(new ObservableValue(0.0));
+                totalB[i].Add(new ObservableValue(0.0));
+                rateA[i].Add(new ObservableValue(0.0));
+                rateB[i].Add(new ObservableValue(0.0));
+            }
+
+        WeeklyDataMap["totalA"] = totalA;
+        WeeklyDataMap["rateA"] = rateA;
+        WeeklyDataMap["totalB"] = totalB;
+        WeeklyDataMap["rateB"] = rateB;
     }
 
     public AvaloniaList<ProductionData> LoadData()
@@ -109,33 +148,10 @@ public class DatabaseManager
         using var connection = new MySqlConnection(_connectionString);
         connection.Open();
 
-        // Create a list of all expected dates for the last 7 days
-        var expectedDates = Enumerable.Range(-6, 7)
-            .Select(offset => DateTime.Today.AddDays(offset).Date)
-            .ToList();
-
-        var totalA = new List<ObservableCollection<ObservableValue>>();
-        var totalB = new List<ObservableCollection<ObservableValue>>();
-        var rateA = new List<ObservableCollection<ObservableValue>>();
-        var rateB = new List<ObservableCollection<ObservableValue>>();
-
-        for (var i = 0; i < 6; i++)
-        {
-            totalA.Add([]);
-            totalB.Add([]);
-            rateA.Add([]);
-            rateB.Add([]);
-        }
-
-        // Initialize totalA with 0s for all expected dates
-        foreach (var _ in expectedDates)
-            for (var i = 0; i < 6; i++)
-            {
-                totalA[i].Add(new ObservableValue(0.0));
-                totalB[i].Add(new ObservableValue(0.0));
-                rateA[i].Add(new ObservableValue(0.0));
-                rateB[i].Add(new ObservableValue(0.0));
-            }
+        var totalA = WeeklyDataMap["totalA"];
+        var totalB = WeeklyDataMap["totalB"];
+        var rateA = WeeklyDataMap["rateA"];
+        var rateB = WeeklyDataMap["rateB"];
 
         var queryBuilder = new StringBuilder();
         queryBuilder.Append("SELECT DATE(Date) AS Date,");
@@ -166,7 +182,7 @@ public class DatabaseManager
             for (var i = 0; i < 6; i++)
             {
                 var date = reader.GetDateTime("Date").Date;
-                var dataIndex = expectedDates.IndexOf(date);
+                var dataIndex = _expectedDates.IndexOf(date);
                 totalA[i][dataIndex].Value = reader.GetDouble($"total_count{i + 1}");
                 rateA[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
@@ -206,7 +222,7 @@ public class DatabaseManager
             for (var i = 0; i < 6; i++)
             {
                 var date = reader.GetDateTime("Date").Date;
-                var dataIndex = expectedDates.IndexOf(date);
+                var dataIndex = _expectedDates.IndexOf(date);
                 totalB[i][dataIndex].Value = reader.GetDouble($"total_count{i + 1}");
                 rateB[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
