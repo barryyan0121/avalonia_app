@@ -13,32 +13,21 @@ namespace AvaloniaApplication.Models;
 
 public static class ChartDataGenerator
 {
-    public static void GenerateLineSeries(ISeries[] seriesArray, List<List<double>> data, List<string> labels)
+    public static void GenerateLineSeries(ObservableCollection<ISeries> seriesArray,
+        List<ObservableCollection<ObservableValue>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)
-            // 如果给定的 seriesArray 已经初始化，则更新对应索引处的 ISeries 对象的 Values 属性
-            if (seriesArray[i] is LineSeries<double> line)
+            seriesArray.Add(new LineSeries<ObservableValue>
             {
-                line.Values = new ObservableCollection<double>(data[i]);
-            }
-
-            else
-            {
-                // 如果给定的 seriesArray 还未初始化，或者索引超出了数组长度，则创建新的 ISeries 对象并添加到数组中
-                var lineSeries = new LineSeries<double>
-                {
-                    Values = new ObservableCollection<double>(data[i]),
-                    Name = labels[i],
-                    DataLabelsSize = 10,
-                    DataLabelsPaint = new SolidColorPaint(SKColors.White),
-                    DataLabelsPosition = DataLabelsPosition.Top,
-                    Fill = null,
-                    GeometrySize = 8,
-                    LineSmoothness = 0
-                };
-
-                seriesArray[i] = lineSeries;
-            }
+                Values = data[i],
+                Name = labels[i],
+                DataLabelsSize = 10,
+                DataLabelsPaint = new SolidColorPaint(SKColors.White),
+                DataLabelsPosition = DataLabelsPosition.Top,
+                Fill = null,
+                GeometrySize = 8,
+                LineSmoothness = 0
+            });
     }
 
     public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names,
