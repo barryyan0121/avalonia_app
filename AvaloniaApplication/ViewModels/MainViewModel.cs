@@ -24,7 +24,10 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel()
     {
-        for (var i = 0; i < PieSeries.Length; i++) PieSeries[i] = new ISeries[2];
+        for (var i = 0; i < PieSeries.Length; i++)
+        {
+            PieSeries[i] = new ISeries[2];
+        }
 
         LiveCharts.Configure(config =>
             config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
@@ -35,10 +38,14 @@ public class MainViewModel : ViewModelBase
         RefreshData(databaseManager);
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, databaseManager.WeeklyDataMap["totalA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, databaseManager.WeeklyDataMap["totalB"], DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesA, databaseManager.WeeklyDataMap["rateA"], DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesB, databaseManager.WeeklyDataMap["rateB"], DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, databaseManager.WeeklyDataMap["totalA"],
+            DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, databaseManager.WeeklyDataMap["totalB"],
+            DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, databaseManager.WeeklyDataMap["rateA"],
+            DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, databaseManager.WeeklyDataMap["rateB"],
+            DatabaseManager.ProductionLinesB);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
@@ -126,16 +133,22 @@ public class MainViewModel : ViewModelBase
     {
         // Close the application
         if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
             desktop.Shutdown();
+        }
     }
 
     public void SwitchViewCommand()
     {
         // Switch between the main view and the secondary view
         if (CurrentView is PrimaryView)
+        {
             CurrentView = new SecondaryView();
+        }
         else
+        {
             CurrentView = new PrimaryView();
+        }
     }
 
     private async Task CheckForDataChanges(DatabaseManager databaseManager)
