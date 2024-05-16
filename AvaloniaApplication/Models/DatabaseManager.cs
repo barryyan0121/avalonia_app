@@ -54,6 +54,8 @@ public class DatabaseManager
         .Select(offset => DateTime.Today.AddDays(offset).Date)
         .ToList();
 
+    public readonly ProgressInfo[] ProgressInfos;
+
     public readonly Dictionary<string, ObservableValue> ProgressMap = new();
 
     public readonly Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> RateMap = new();
@@ -63,12 +65,16 @@ public class DatabaseManager
     public DatabaseManager(string connectionString)
     {
         _connectionString = connectionString;
+        ProgressInfos = new ProgressInfo[ProductionLinesTotal.Count];
+        var paints = ProgressInfo.Paints;
+        var i = 0;
         foreach (var line in ProductionLinesTotal)
         {
             RateMap[line] =
                 new KeyValuePair<ObservableValue, ObservableValue>(new ObservableValue(0), new ObservableValue(1));
 
             ProgressMap[line] = new ObservableValue(0);
+            ProgressInfos[i++] = new ProgressInfo(line, 0, ProgressInfo.Paints[i % 9]);
         }
 
         InitializeWeeklyData();
@@ -133,11 +139,12 @@ public class DatabaseManager
                 TargetCount = reader.GetInt32("target_count"),
                 Date = reader.GetDateTime("date")
             };
-
-            RateMap[productionData.Name].Key.Value = productionData.QualifiedRate;
-            RateMap[productionData.Name].Value.Value = Math.Round(1 - productionData.QualifiedRate, 3);
-            ProgressMap[productionData.Name].Value =
-                Math.Round((double)totalCount / productionData.TargetCount * 100, 3);
+            var name = productionData.Name;
+            var progressResult = Math.Round((double)totalCount / productionData.TargetCount * 100, 3);
+            RateMap[name].Key.Value = productionData.QualifiedRate;
+            RateMap[name].Value.Value = Math.Round(1 - productionData.QualifiedRate, 3);
+            ProgressMap[name].Value = progressResult;
+            ProgressInfos[ProductionLinesTotal.IndexOf(name)].Value = progressResult;
 
             data.Add(productionData);
         }

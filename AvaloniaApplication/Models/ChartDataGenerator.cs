@@ -101,17 +101,8 @@ public static class ChartDataGenerator
         return dates;
     }
 
-    public static void GenerateRowSeries(ISeries[] series, Dictionary<string, ObservableValue> map)
+    public static void GenerateRowSeries(ISeries[] series, ProgressInfo[] data)
     {
-        var paints = ProgressInfo.Paints;
-        var length = map.Count;
-        var data = new ProgressInfo[length];
-        for (var i = 0; i < length; i++)
-        {
-            var pair = map.ElementAt(i);
-            data[i] = new ProgressInfo(pair.Key, (double)pair.Value.Value!, paints[i % 9]);
-        }
-
         var rowSeries = new RowSeries<ProgressInfo>
         {
             Values = data.OrderBy(x => x.Value).ToArray(),

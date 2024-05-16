@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
@@ -44,7 +45,7 @@ public class MainViewModel : ViewModelBase
             DatabaseManager.ProductionLinesA);
         ChartDataGenerator.GenerateLineSeries(RateSeriesB, databaseManager.WeeklyDataMap["rateB"],
             DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateRowSeries(RaceSeries, databaseManager.ProgressMap);
+        ChartDataGenerator.GenerateRowSeries(RaceSeries, databaseManager.ProgressInfos);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(databaseManager); });
     }
@@ -157,6 +158,7 @@ public class MainViewModel : ViewModelBase
         {
             // Reload data from the database
             RefreshData(databaseManager);
+            RaceSeries[0].Values = databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
             await Task.Delay(TimeSpan.FromSeconds(3)); // Wait for 3 seconds before reloading data again
         }
     }
@@ -167,5 +169,6 @@ public class MainViewModel : ViewModelBase
         DailyData = databaseManager.LoadData();
         databaseManager.LoadWeeklyData();
         this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
+        
     }
 }
