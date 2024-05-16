@@ -19,6 +19,7 @@ namespace AvaloniaApplication.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    private readonly DatabaseManager _databaseManager;
     private UserControl _currentView = new PrimaryView();
     private DateTime _today = DateTime.Today;
 
@@ -33,21 +34,21 @@ public class MainViewModel : ViewModelBase
             config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
         const string connectionString =
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
-        var databaseManager = new DatabaseManager(connectionString);
-        RefreshData(databaseManager);
-        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, databaseManager.ProgressMap);
-        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, databaseManager.RateMap);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, databaseManager.WeeklyDataMap["totalA"],
+        _databaseManager = new DatabaseManager(connectionString);
+        RefreshData();
+        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
+        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, _databaseManager.RateMap);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, _databaseManager.WeeklyDataMap["totalA"],
             DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, databaseManager.WeeklyDataMap["totalB"],
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, _databaseManager.WeeklyDataMap["totalB"],
             DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesA, databaseManager.WeeklyDataMap["rateA"],
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, _databaseManager.WeeklyDataMap["rateA"],
             DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesB, databaseManager.WeeklyDataMap["rateB"],
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
             DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateRowSeries(RaceSeries, databaseManager.ProgressInfos);
+        ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
         // Start a background task to periodically check for data changes
-        Task.Run(async () => { await CheckForDataChanges(databaseManager); });
+        Task.Run(async () => { await CheckForDataChanges(); });
     }
 
     public AvaloniaList<ProductionData> DailyData { get; set; } = [];
@@ -81,6 +82,29 @@ public class MainViewModel : ViewModelBase
             NameTextSize = 10,
             TextSize = 10,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 }
+        }
+    ];
+
+    public Axis[] XProgressAxes { get; set; } =
+    [
+        new Axis
+        {
+            Name = "生产进度",
+            NamePaint = new SolidColorPaint(SKColors.White),
+            LabelsPaint = new SolidColorPaint(SKColors.White),
+            NameTextSize = 10,
+            TextSize = 10,
+            SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 },
+            MinLimit = 0,
+            MaxLimit = 100
+        }
+    ];
+
+    public Axis[] YProgressAxes { get; set; } =
+    [
+        new Axis
+        {
+            IsVisible = false
         }
     ];
 
@@ -152,23 +176,22 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    private async Task CheckForDataChanges(DatabaseManager databaseManager)
+    private async Task CheckForDataChanges()
     {
         while (true)
         {
             // Reload data from the database
-            RefreshData(databaseManager);
-            RaceSeries[0].Values = databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
+            RefreshData();
+            RaceSeries[0].Values = _databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
             await Task.Delay(TimeSpan.FromSeconds(3)); // Wait for 3 seconds before reloading data again
         }
     }
 
-    private void RefreshData(DatabaseManager databaseManager)
+    private void RefreshData()
     {
         // Reload data from the database
-        DailyData = databaseManager.LoadData();
-        databaseManager.LoadWeeklyData();
+        DailyData = _databaseManager.LoadData();
+        _databaseManager.LoadWeeklyData();
         this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
-        
     }
 }

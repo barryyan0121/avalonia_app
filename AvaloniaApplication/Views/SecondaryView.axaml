@@ -39,7 +39,9 @@
                        FontSize="20" />
 
             <avalonia:CartesianChart Grid.Row="2" Grid.Column="0" Grid.RowSpan="7"
-                                     Series="{Binding RaceSeries}" />
+                                     Series="{Binding RaceSeries}"
+                                     XAxes="{Binding XProgressAxes}"
+                                     YAxes="{Binding YProgressAxes}"/>
 
             <TextBlock Grid.Row="1" Grid.Column="1"
                        HorizontalAlignment="Center"

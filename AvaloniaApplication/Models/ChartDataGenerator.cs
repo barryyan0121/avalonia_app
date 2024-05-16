@@ -109,7 +109,7 @@ public static class ChartDataGenerator
             DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
             DataLabelsPosition = DataLabelsPosition.End,
             DataLabelsTranslate = new LvcPoint(-1, 0),
-            DataLabelsFormatter = point => $"{point.Model!.Name} {Math.Round(point.Coordinate.PrimaryValue)}%",
+            DataLabelsFormatter = point => $"{point.Model!.Name} {Math.Round(point.Coordinate.PrimaryValue, 1)}%",
             DataLabelsSize = 10,
             MaxBarWidth = 50,
             Padding = 10
