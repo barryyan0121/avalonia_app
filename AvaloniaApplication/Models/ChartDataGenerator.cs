@@ -106,13 +106,15 @@ public static class ChartDataGenerator
         var rowSeries = new RowSeries<ProgressInfo>
         {
             Values = data.OrderBy(x => x.Value).ToArray(),
+            Name = "生产进度",
             DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
             DataLabelsPosition = DataLabelsPosition.End,
             DataLabelsTranslate = new LvcPoint(-1, 0),
             DataLabelsFormatter = point => $"{point.Model!.Name} {Math.Round(point.Coordinate.PrimaryValue, 1)}%",
             DataLabelsSize = 10,
             MaxBarWidth = 50,
-            Padding = 10
+            Padding = 10,
+            IsVisibleAtLegend = false
         }.OnPointMeasured(point =>
         {
             if (point.Visual is null)

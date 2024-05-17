@@ -89,7 +89,7 @@ public class MainViewModel : ViewModelBase
     [
         new Axis
         {
-            Name = "生产进度",
+            Name = "生产进度 (%)",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
             NameTextSize = 10,
