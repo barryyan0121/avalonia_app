@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS production_data
     qualified_count INT,
     defective_count INT,
     target_amount   INT,
-    date            DATETIME
+    date            DATE,
+    last_modified   TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET = utf8mb4;
 
 -- Create a table to store daily target for each name

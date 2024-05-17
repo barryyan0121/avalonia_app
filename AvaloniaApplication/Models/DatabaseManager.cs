@@ -133,7 +133,7 @@ public class DatabaseManager
             data.Add(productionData);
         }
 
-        return data;
+        return new AvaloniaList<ProductionData>(data.OrderBy(x => x.Name));
     }
 
     public void LoadWeeklyData()
