@@ -137,7 +137,7 @@ public class MainViewModel : ViewModelBase
             {
                 StrokeThickness = 2
             },
-            MaxLimit = 1.001
+            MaxLimit = 1.1
         }
     ];
 
