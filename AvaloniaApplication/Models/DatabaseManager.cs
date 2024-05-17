@@ -136,7 +136,7 @@ public class DatabaseManager
                 DefectiveCount = defectiveCount,
                 QualifiedRate = Math.Round((double)qualifiedCount / totalCount, 3),
                 TotalCount = totalCount,
-                TargetCount = reader.GetInt32("target_count"),
+                TargetCount = reader.GetInt32("target_amount"),
                 Date = reader.GetDateTime("date")
             };
             var name = productionData.Name;
