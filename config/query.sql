@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS production_data
 -- Insert sample data for the past seven days with distinct values
 INSERT INTO production_data (name, qualified_count, defective_count, target_count, date)
 SELECT name,
-       FLOOR(RAND() * 30) + 80    AS qualified_count,
-       FLOOR(RAND() * 10)         AS defective_count,
+       FLOOR(RAND() * 30) + 50    AS qualified_count,
+       FLOOR(RAND() * 20)         AS defective_count,
        FLOOR(RAND() * 30) + 100   AS target_count,
        CURDATE() - INTERVAL i DAY AS date
 FROM (SELECT '胶纸切割' AS name

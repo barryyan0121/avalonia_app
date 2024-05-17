@@ -31,84 +31,17 @@
                 <Run Text="储能电堆装配线生产看板 (柱状图及进度条)" />
                 <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
             </TextBlock>
+
             <TextBlock Grid.Row="1" Grid.Column="0"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Text="当日各设备生产总览"
-                       FontSize="20" />
-            <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="7"
-                      ItemsSource="{Binding DailyData}"
-                      Margin="1"
-                      IsReadOnly="True"
-                      AutoGenerateColumns="False"
-                      CanUserReorderColumns="True"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True"
-                      GridLinesVisibility="All">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="合格数" Width="Auto" Binding="{Binding QualifiedCount}" />
-                    <DataGridTextColumn Header="不合格数" Width="Auto" Binding="{Binding DefectiveCount}" />
-                    <DataGridTextColumn Header="合格率" Width="Auto" Binding="{Binding QualifiedRate}" />
-                    <DataGridTextColumn Header="总量" Width="*" Binding="{Binding TotalCount}" />
-                </DataGrid.Columns>
-            </DataGrid>
-
-            <TextBlock Grid.Row="9" Grid.Column="0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="近七日A区设备合格率"
+                       Text="工位生产完成率进度比较"
                        FontSize="20" />
 
-            <avalonia:CartesianChart Grid.Row="10" Grid.Column="0" Grid.RowSpan="5"
-                                     Series="{Binding RateSeriesA}"
-                                     XAxes="{Binding XAxes}"
-                                     YAxes="{Binding YRateAxes}"
-                                     LegendPosition="Bottom"
-                                     LegendTextPaint="{Binding LegendTextPaint}"
-                                     LegendTextSize="10" />
-
-            <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="近七日A区设备产量"
-                       FontSize="20" />
-
-            <avalonia:CartesianChart Grid.Row="10" Grid.Column="1" Grid.RowSpan="5" Grid.ColumnSpan="2"
-                                     Series="{Binding TotalSeriesA}"
-                                     XAxes="{Binding XAxes}"
-                                     YAxes="{Binding YProductionAxes}"
-                                     LegendPosition="Bottom"
-                                     LegendTextPaint="{Binding LegendTextPaint}"
-                                     LegendTextSize="10" />
-
-            <TextBlock Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="2"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="近七日B区设备合格率"
-                       FontSize="20" />
-
-            <avalonia:CartesianChart Grid.Row="10" Grid.Column="3" Grid.RowSpan="5" Grid.ColumnSpan="2"
-                                     Series="{Binding RateSeriesB}"
-                                     XAxes="{Binding XAxes}"
-                                     YAxes="{Binding YRateAxes}"
-                                     LegendPosition="Bottom"
-                                     LegendTextPaint="{Binding LegendTextPaint}"
-                                     LegendTextSize="10" />
-
-            <TextBlock Grid.Row="9" Grid.Column="5" Grid.ColumnSpan="2"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Text="近七日B区设备产量"
-                       FontSize="20" />
-
-            <avalonia:CartesianChart Grid.Row="10" Grid.Column="5" Grid.RowSpan="5" Grid.ColumnSpan="2"
-                                     Series="{Binding TotalSeriesB}"
-                                     XAxes="{Binding XAxes}"
-                                     YAxes="{Binding YProductionAxes}"
-                                     LegendPosition="Bottom"
-                                     LegendTextPaint="{Binding LegendTextPaint}"
-                                     LegendTextSize="10" />
+            <avalonia:CartesianChart Grid.Row="2" Grid.Column="0" Grid.RowSpan="7"
+                                     Series="{Binding RaceSeries}"
+                                     XAxes="{Binding XProgressAxes}"
+                                     YAxes="{Binding YProgressAxes}" />
 
             <TextBlock Grid.Row="1" Grid.Column="1"
                        HorizontalAlignment="Center"
@@ -129,11 +62,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="2" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[1]}"
+                               Series="{Binding GaugeSeries[1]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="3"
                        HorizontalAlignment="Center"
@@ -142,11 +74,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="3" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[2]}"
+                               Series="{Binding GaugeSeries[2]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="4"
                        HorizontalAlignment="Center"
@@ -155,11 +86,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="4" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[3]}"
+                               Series="{Binding GaugeSeries[3]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="5"
                        HorizontalAlignment="Center"
@@ -168,11 +98,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="5" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[4]}"
+                               Series="{Binding GaugeSeries[4]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="1" Grid.Column="6"
                        HorizontalAlignment="Center"
@@ -181,11 +110,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="2" Grid.Column="6" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[5]}"
+                               Series="{Binding GaugeSeries[5]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="1"
                        HorizontalAlignment="Center"
@@ -194,11 +122,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="1" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[6]}"
+                               Series="{Binding GaugeSeries[6]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="2"
                        HorizontalAlignment="Center"
@@ -207,11 +134,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="2" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[7]}"
+                               Series="{Binding GaugeSeries[7]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="3"
                        HorizontalAlignment="Center"
@@ -220,11 +146,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="3" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[8]}"
+                               Series="{Binding GaugeSeries[8]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="4"
                        HorizontalAlignment="Center"
@@ -233,11 +158,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="4" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[9]}"
+                               Series="{Binding GaugeSeries[9]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="5"
                        HorizontalAlignment="Center"
@@ -246,11 +170,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="5" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[10]}"
+                               Series="{Binding GaugeSeries[10]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
             <TextBlock Grid.Row="5" Grid.Column="6"
                        HorizontalAlignment="Center"
@@ -259,11 +182,10 @@
                        FontSize="20" />
 
             <avalonia:PieChart Grid.Row="6" Grid.Column="6" Grid.RowSpan="3"
-                               Series="{Binding PieSeries[11]}"
+                               Series="{Binding GaugeSeries[11]}"
                                InitialRotation="-90"
-                               LegendPosition="Bottom"
-                               LegendTextPaint="{Binding LegendTextPaint}"
-                               LegendTextSize="10" />
+                               MinValue="0"
+                               MaxValue="100" />
 
         </Grid>
     </DockPanel>

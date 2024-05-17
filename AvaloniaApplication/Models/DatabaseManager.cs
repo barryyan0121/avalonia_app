@@ -54,6 +54,8 @@ public class DatabaseManager
         .Select(offset => DateTime.Today.AddDays(offset).Date)
         .ToList();
 
+    public readonly ProgressInfo[] ProgressInfos;
+
     public readonly Dictionary<string, ObservableValue> ProgressMap = new();
 
     public readonly Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> RateMap = new();
@@ -63,12 +65,16 @@ public class DatabaseManager
     public DatabaseManager(string connectionString)
     {
         _connectionString = connectionString;
+        ProgressInfos = new ProgressInfo[ProductionLinesTotal.Count];
+        var paints = ProgressInfo.Paints;
+        var i = 0;
         foreach (var line in ProductionLinesTotal)
         {
             RateMap[line] =
                 new KeyValuePair<ObservableValue, ObservableValue>(new ObservableValue(0), new ObservableValue(1));
 
             ProgressMap[line] = new ObservableValue(0);
+            ProgressInfos[i++] = new ProgressInfo(line, 0, ProgressInfo.Paints[i % 9]);
         }
 
         InitializeWeeklyData();
@@ -92,6 +98,7 @@ public class DatabaseManager
 
         // Initialize totalA with 0s for all expected dates
         foreach (var _ in _expectedDates)
+        {
             for (var i = 0; i < 6; i++)
             {
                 totalA[i].Add(new ObservableValue(0.0));
@@ -99,6 +106,7 @@ public class DatabaseManager
                 rateA[i].Add(new ObservableValue(0.0));
                 rateB[i].Add(new ObservableValue(0.0));
             }
+        }
 
         WeeklyDataMap["totalA"] = totalA;
         WeeklyDataMap["rateA"] = rateA;
@@ -131,11 +139,12 @@ public class DatabaseManager
                 TargetCount = reader.GetInt32("target_count"),
                 Date = reader.GetDateTime("date")
             };
-
-            RateMap[productionData.Name].Key.Value = productionData.QualifiedRate;
-            RateMap[productionData.Name].Value.Value = Math.Round(1 - productionData.QualifiedRate, 3);
-            ProgressMap[productionData.Name].Value =
-                Math.Round((double)totalCount / productionData.TargetCount * 100, 3);
+            var name = productionData.Name;
+            var progressResult = Math.Round((double)totalCount / productionData.TargetCount * 100, 3);
+            RateMap[name].Key.Value = productionData.QualifiedRate;
+            RateMap[name].Value.Value = Math.Round(1 - productionData.QualifiedRate, 3);
+            ProgressMap[name].Value = progressResult;
+            ProgressInfos[ProductionLinesTotal.IndexOf(name)].Value = progressResult;
 
             data.Add(productionData);
         }
@@ -165,7 +174,10 @@ public class DatabaseManager
                            WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
                            ELSE 0 
                        END, 0)) AS qualified_rate{i + 1}");
-            if (i < ProductionLinesA.Count - 1) queryBuilder.Append(',');
+            if (i < ProductionLinesA.Count - 1)
+            {
+                queryBuilder.Append(',');
+            }
         }
 
         queryBuilder.Append(@"
@@ -179,6 +191,7 @@ public class DatabaseManager
         var reader = command.ExecuteReader();
 
         while (reader.Read())
+        {
             for (var i = 0; i < 6; i++)
             {
                 var date = reader.GetDateTime("Date").Date;
@@ -186,6 +199,7 @@ public class DatabaseManager
                 totalA[i][dataIndex].Value = reader.GetDouble($"total_count{i + 1}");
                 rateA[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
+        }
 
         WeeklyDataMap["totalA"] = totalA;
         WeeklyDataMap["rateA"] = rateA;
@@ -205,7 +219,10 @@ public class DatabaseManager
                            WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
                            ELSE 0 
                        END, 0)) AS qualified_rate{i + 1}");
-            if (i < ProductionLinesB.Count - 1) queryBuilder.Append(',');
+            if (i < ProductionLinesB.Count - 1)
+            {
+                queryBuilder.Append(',');
+            }
         }
 
         queryBuilder.Append(@"
@@ -219,6 +236,7 @@ public class DatabaseManager
         reader = command.ExecuteReader();
 
         while (reader.Read())
+        {
             for (var i = 0; i < 6; i++)
             {
                 var date = reader.GetDateTime("Date").Date;
@@ -226,6 +244,7 @@ public class DatabaseManager
                 totalB[i][dataIndex].Value = reader.GetDouble($"total_count{i + 1}");
                 rateB[i][dataIndex].Value = Math.Round(reader.GetDouble($"qualified_rate{i + 1}"), 3);
             }
+        }
 
         WeeklyDataMap["totalB"] = totalB;
         WeeklyDataMap["rateB"] = rateB;

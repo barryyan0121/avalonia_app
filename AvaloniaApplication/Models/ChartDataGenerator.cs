@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using LiveChartsCore;
+using LiveChartsCore.ConditionalDraw;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Drawing;
 using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Extensions;
@@ -17,6 +20,7 @@ public static class ChartDataGenerator
         List<ObservableCollection<ObservableValue>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)
+        {
             seriesArray.Add(new LineSeries<ObservableValue>
             {
                 Values = data[i],
@@ -28,6 +32,7 @@ public static class ChartDataGenerator
                 GeometrySize = 8,
                 LineSmoothness = 0
             });
+        }
     }
 
     public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names,
@@ -37,7 +42,11 @@ public static class ChartDataGenerator
         {
             var series = seriesArray[i];
             var name = names[i];
-            if (!map.TryGetValue(name, out var pair)) continue;
+            if (!map.TryGetValue(name, out var pair))
+            {
+                continue;
+            }
+
             var rate1 = pair.Key;
             var rate2 = pair.Value;
             series[0] = new PieSeries<ObservableValue>
@@ -63,7 +72,10 @@ public static class ChartDataGenerator
         for (var i = 0; i < seriesArray.Length; i++)
         {
             var name = names[i];
-            if (!map.TryGetValue(name, out var rate)) continue;
+            if (!map.TryGetValue(name, out var rate))
+            {
+                continue;
+            }
 
             seriesArray[i] = GaugeGenerator.BuildSolidGauge(
                 new GaugeItem(rate, s =>
@@ -81,8 +93,37 @@ public static class ChartDataGenerator
         var today = DateTime.Today;
         var dates = new string[7];
 
-        for (var i = 0; i < 7; i++) dates[6 - i] = today.AddDays(-i).ToString("M/d");
+        for (var i = 0; i < 7; i++)
+        {
+            dates[6 - i] = today.AddDays(-i).ToString("M/d");
+        }
 
         return dates;
+    }
+
+    public static void GenerateRowSeries(ISeries[] series, ProgressInfo[] data)
+    {
+        var rowSeries = new RowSeries<ProgressInfo>
+        {
+            Values = data.OrderBy(x => x.Value).ToArray(),
+            Name = "生产进度",
+            DataLabelsPaint = new SolidColorPaint(new SKColor(245, 245, 245)),
+            DataLabelsPosition = DataLabelsPosition.End,
+            DataLabelsTranslate = new LvcPoint(-1, 0),
+            DataLabelsFormatter = point => $"{point.Model!.Name} {Math.Round(point.Coordinate.PrimaryValue, 1)}%",
+            DataLabelsSize = 10,
+            MaxBarWidth = 50,
+            Padding = 10,
+            IsVisibleAtLegend = false
+        }.OnPointMeasured(point =>
+        {
+            if (point.Visual is null)
+            {
+                return;
+            }
+
+            point.Visual.Fill = point.Model!.Paint;
+        });
+        series[0] = rowSeries;
     }
 }
