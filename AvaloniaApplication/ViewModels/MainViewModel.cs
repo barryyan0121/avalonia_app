@@ -20,8 +20,10 @@ namespace AvaloniaApplication.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private readonly DatabaseManager _databaseManager;
-    private UserControl _currentView = new PrimaryView();
+    private UserControl _currentView;
     private DateTime _today = DateTime.Today;
+    private readonly List<UserControl> _views = [new PrimaryView(), new SecondaryView()];
+    private int _currentViewIndex;
 
     public MainViewModel()
     {
@@ -29,6 +31,10 @@ public class MainViewModel : ViewModelBase
         {
             PieSeries[i] = new ISeries[2];
         }
+        
+        
+        _currentViewIndex = 0;
+        _currentView = _views[_currentViewIndex];
 
         LiveCharts.Configure(config =>
             config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
@@ -163,17 +169,16 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    public void SwitchViewCommand()
+    public void SwitchViewCommand(string parameter)
     {
-        // Switch between the main view and the secondary view
-        if (CurrentView is PrimaryView)
+        _currentViewIndex = parameter switch
         {
-            CurrentView = new SecondaryView();
-        }
-        else
-        {
-            CurrentView = new PrimaryView();
-        }
+            "Primary" => 0,
+            "Secondary" => 1,
+            _ => _currentViewIndex
+        };
+
+        CurrentView = _views[_currentViewIndex];
     }
 
     private async Task CheckForDataChanges()

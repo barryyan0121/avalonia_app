@@ -1,7 +1,7 @@
 -- Insert sample data into daily_target for the past ten days with a predefined target amount
 INSERT INTO daily_target (name, target_amount, date)
 SELECT name,
-       FLOOR(RAND() * 30) + 100            AS target_amount, -- Random target amount between 10000 and 13000
+       FLOOR(RAND() * 300) + 1000            AS target_amount, -- Random target amount between 10000 and 13000
        CURDATE() - INTERVAL day_offset DAY AS date
 FROM (SELECT '胶纸切割' AS name
       UNION ALL
@@ -117,4 +117,4 @@ END //
 
 DELIMITER ;
 
-CALL InsertProductionDetails(100);
+CALL InsertProductionDetails(1000);

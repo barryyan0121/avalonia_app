@@ -15,11 +15,12 @@
 
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="菜单">
-                <MenuItem Header="切换视图" Command="{Binding SwitchViewCommand }" />
+            <MenuItem Header="视图切换">
+                <MenuItem Header="生产合格率" Command="{Binding SwitchViewCommand }" CommandParameter="Primary" />
                 <Separator />
-                <MenuItem Header="退出" Command="{Binding ExitCommand }" />
+                <MenuItem Header="生产进度" Command="{Binding SwitchViewCommand }" CommandParameter="Secondary" />
             </MenuItem>
+            <MenuItem Header="退出" Command="{Binding ExitCommand }"></MenuItem>
         </Menu>
         <Grid ColumnDefinitions="2*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,Auto,*,*,*,Auto,*,*,*,*,*" Margin="4"
               ShowGridLines="False">

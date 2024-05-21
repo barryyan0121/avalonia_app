@@ -111,8 +111,8 @@ public static class ChartDataGenerator
             DataLabelsPosition = DataLabelsPosition.End,
             DataLabelsTranslate = new LvcPoint(-1, 0),
             DataLabelsFormatter = point => $"{point.Model!.Name} {Math.Round(point.Coordinate.PrimaryValue, 1)}%",
-            DataLabelsSize = 10,
-            MaxBarWidth = 50,
+            DataLabelsSize = 15,
+            MaxBarWidth = 80,
             Padding = 10,
             IsVisibleAtLegend = false
         }.OnPointMeasured(point =>
