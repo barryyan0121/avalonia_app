@@ -21,8 +21,10 @@ public class MainViewModel : ViewModelBase
 {
     private readonly DatabaseManager _databaseManager;
     private readonly List<UserControl> _views = [new PrimaryView(), new SecondaryView(), new TertiaryView()];
-    private int _currentViewIndex;
+    private int _currentProductionIndex;
     private UserControl _currentView;
+    private int _currentViewIndex;
+    private AvaloniaList<ProductionData> _dailyData = [];
     private DateTime _today = DateTime.Today;
 
     public MainViewModel()
@@ -31,7 +33,7 @@ public class MainViewModel : ViewModelBase
         {
             PieSeries[i] = new ISeries[2];
         }
-        
+
         _currentView = _views[_currentViewIndex];
 
         LiveCharts.Configure(config =>
@@ -55,7 +57,13 @@ public class MainViewModel : ViewModelBase
         Task.Run(async () => { await CheckForDataChanges(); });
     }
 
-    public AvaloniaList<ProductionData> DailyData { get; set; } = [];
+    private AvaloniaList<AvaloniaList<ProductionDetails>> ProductionDetailsList { get; set; } = [];
+
+    public AvaloniaList<ProductionData> DailyData
+    {
+        get => _dailyData;
+        set => this.RaiseAndSetIfChanged(ref _dailyData, value);
+    }
 
 
     public DateTime Today
@@ -73,6 +81,19 @@ public class MainViewModel : ViewModelBase
     public ISeries[] RaceSeries { get; set; } = new ISeries[1];
 
     public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
+
+    public int CurrentProductionIndex
+    {
+        get => _currentProductionIndex;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _currentProductionIndex, value);
+            ProductionDetailsList = _databaseManager.LoadAllData();
+            this.RaisePropertyChanged(nameof(CurrentProductionList));
+        }
+    }
+
+    public AvaloniaList<ProductionDetails> CurrentProductionList => ProductionDetailsList[CurrentProductionIndex];
 
 
     public Axis[] XAxes { get; set; } =
@@ -140,8 +161,7 @@ public class MainViewModel : ViewModelBase
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
             {
                 StrokeThickness = 2
-            },
-            MaxLimit = 1.1
+            }
         }
     ];
 
@@ -187,7 +207,7 @@ public class MainViewModel : ViewModelBase
             // Reload data from the database
             RefreshData();
             RaceSeries[0].Values = _databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
-            await Task.Delay(TimeSpan.FromSeconds(3)); // Wait for 3 seconds before reloading data again
+            await Task.Delay(TimeSpan.FromSeconds(10)); // Wait for 10 seconds before reloading data again
         }
     }
 
@@ -196,6 +216,5 @@ public class MainViewModel : ViewModelBase
         // Reload data from the database
         DailyData = _databaseManager.LoadData();
         _databaseManager.LoadWeeklyData();
-        this.RaisePropertyChanged(nameof(DailyData)); // Notify UI about the data change
     }
 }
