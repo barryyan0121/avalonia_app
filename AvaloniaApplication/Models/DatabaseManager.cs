@@ -235,4 +235,36 @@ public class DatabaseManager
 
         reader.Close();
     }
+
+    public AvaloniaList<AvaloniaList<ProductionDetails>> LoadAllData()
+    {
+        AvaloniaList<AvaloniaList<ProductionDetails>> productionDetailsList = [];
+        using var connection = new MySqlConnection(_connectionString);
+        connection.Open();
+        const string query = "SELECT * FROM production_details ORDER BY production_time;";
+        var command = new MySqlCommand(query, connection);
+        var reader = command.ExecuteReader();
+
+        // Clear existing data if necessary
+        foreach (var line in ProductionLinesTotal)
+        {
+            productionDetailsList.Add([]);
+        }
+
+        while (reader.Read())
+        {
+            var productionDetails = new ProductionDetails
+            {
+                Id = reader.GetInt32("id"),
+                Name = reader.GetString("name"),
+                OperatorId = reader.GetInt32("operator_id"),
+                MachineId = reader.GetInt32("machine_id"),
+                IsQualified = reader.GetBoolean("is_qualified") ? "OK" : "NG",
+                ProductionTime = reader.GetDateTime("production_time")
+            };
+            productionDetailsList[ProductionLinesTotal.IndexOf(productionDetails.Name)].Add(productionDetails);
+        }
+
+        return productionDetailsList;
+    }
 }

@@ -22,6 +22,44 @@
             </MenuItem>
             <MenuItem Header="退出" Command="{Binding ExitCommand }" />
         </Menu>
-        <Separator DockPanel.Dock="Top"/>
+        <Separator DockPanel.Dock="Top" />
+
+        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*" Margin="4"
+              ShowGridLines="True">
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" TextAlignment="Center"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="CornflowerBlue"
+                       FontSize="30">
+                <Run Text="储能电堆装配线 单工位产量查询" />
+                <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="3" Text="工位名称：" HorizontalAlignment="Right" FontSize="25"
+                       VerticalAlignment="Center" />
+            <ComboBox Grid.Row="1" Grid.Column="4" Width="150" Height="30" VerticalAlignment="Center"
+                      HorizontalContentAlignment="Center" HorizontalAlignment="Left"
+                      x:Name="NameTypeComboBox"
+                      ItemsSource="{Binding ProductionLineNames }"
+                      SelectedIndex="{Binding CurrentProductionIndex}" />
+            <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="8"
+                      ItemsSource="{Binding CurrentProductionList}"
+                      Margin="1"
+                      IsReadOnly="True"
+                      AutoGenerateColumns="False"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True"
+                      GridLinesVisibility="All">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="编号" Width="Auto" Binding="{Binding Id}" />
+                    <DataGridTextColumn Header="操作人员编号" Width="Auto" Binding="{Binding OperatorId}" />
+                    <DataGridTextColumn Header="生产机器编号" Width="Auto" Binding="{Binding MachineId}" />
+                    <DataGridTextColumn Header="合格" Width="Auto" Binding="{Binding IsQualified}" />
+                    <DataGridTextColumn Header="生产时间" Width="Auto" Binding="{Binding ProductionTime}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+
     </DockPanel>
 </UserControl>
