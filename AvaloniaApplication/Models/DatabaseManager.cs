@@ -133,6 +133,9 @@ public class DatabaseManager
             data.Add(productionData);
         }
 
+        reader.Close();
+        connection.Close();
+
         return new AvaloniaList<ProductionData>(data.OrderBy(x => x.Name));
     }
 
@@ -234,21 +237,22 @@ public class DatabaseManager
         WeeklyDataMap["rateB"] = rateB;
 
         reader.Close();
+        connection.Close();
     }
 
-    public AvaloniaList<AvaloniaList<ProductionDetails>> LoadAllData()
+    public AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>> LoadAllData()
     {
-        AvaloniaList<AvaloniaList<ProductionDetails>> productionDetailsList = [];
+        AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>> avaloniaDictionary =
+            [];
         using var connection = new MySqlConnection(_connectionString);
         connection.Open();
         const string query = "SELECT * FROM production_details ORDER BY production_time;";
         var command = new MySqlCommand(query, connection);
         var reader = command.ExecuteReader();
 
-        // Clear existing data if necessary
         foreach (var line in ProductionLinesTotal)
         {
-            productionDetailsList.Add([]);
+            avaloniaDictionary[line] = [];
         }
 
         while (reader.Read())
@@ -262,9 +266,26 @@ public class DatabaseManager
                 IsQualified = reader.GetBoolean("is_qualified") ? "OK" : "NG",
                 ProductionTime = reader.GetDateTime("production_time")
             };
-            productionDetailsList[ProductionLinesTotal.IndexOf(productionDetails.Name)].Add(productionDetails);
+            if (!avaloniaDictionary.TryGetValue(productionDetails.Name, out var dateDictionary))
+            {
+                dateDictionary = new AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>();
+                avaloniaDictionary[productionDetails.Name] = dateDictionary;
+            }
+
+            var productionDate = productionDetails.ProductionTime.Date.ToString("yyyy-MM-dd");
+            ;
+            if (!dateDictionary.TryGetValue(productionDate, out var productionList))
+            {
+                productionList = new AvaloniaList<ProductionDetails>();
+                dateDictionary[productionDate] = productionList;
+            }
+
+            productionList.Add(productionDetails);
         }
 
-        return productionDetailsList;
+        reader.Close();
+        connection.Close();
+
+        return avaloniaDictionary;
     }
 }

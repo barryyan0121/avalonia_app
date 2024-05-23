@@ -21,10 +21,15 @@ public class MainViewModel : ViewModelBase
 {
     private readonly DatabaseManager _databaseManager;
     private readonly List<UserControl> _views = [new PrimaryView(), new SecondaryView(), new TertiaryView()];
-    private int _currentProductionIndex;
+
+    private string _currentProductionDate;
+    private string _currentProductionLineName;
     private UserControl _currentView;
     private int _currentViewIndex;
     private AvaloniaList<ProductionData> _dailyData = [];
+
+
+    private AvaloniaList<string> _productionLineDates;
     private DateTime _today = DateTime.Today;
 
     public MainViewModel()
@@ -57,14 +62,14 @@ public class MainViewModel : ViewModelBase
         Task.Run(async () => { await CheckForDataChanges(); });
     }
 
-    private AvaloniaList<AvaloniaList<ProductionDetails>> ProductionDetailsList { get; set; } = [];
+    private AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>>
+        ProductionDetailsDict { get; set; } = [];
 
     public AvaloniaList<ProductionData> DailyData
     {
         get => _dailyData;
         set => this.RaiseAndSetIfChanged(ref _dailyData, value);
     }
-
 
     public DateTime Today
     {
@@ -82,19 +87,43 @@ public class MainViewModel : ViewModelBase
 
     public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
 
-    public int CurrentProductionIndex
+    public string CurrentProductionLineName
     {
-        get => _currentProductionIndex;
+        get => _currentProductionLineName;
         set
         {
-            this.RaiseAndSetIfChanged(ref _currentProductionIndex, value);
-            ProductionDetailsList = _databaseManager.LoadAllData();
+            this.RaiseAndSetIfChanged(ref _currentProductionLineName, value);
+            ProductionDetailsDict = _databaseManager.LoadAllData();
+            this.RaisePropertyChanged(nameof(CurrentProductionList));
+            this.RaisePropertyChanged(nameof(ProductionLineDates));
+        }
+    }
+
+    public string CurrentProductionDate
+    {
+        get => _currentProductionDate;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _currentProductionDate, value);
+            ProductionDetailsDict = _databaseManager.LoadAllData();
             this.RaisePropertyChanged(nameof(CurrentProductionList));
         }
     }
 
-    public AvaloniaList<ProductionDetails> CurrentProductionList => ProductionDetailsList[CurrentProductionIndex];
+    public AvaloniaList<ProductionDetails> CurrentProductionList =>
+        ProductionDetailsDict[CurrentProductionLineName][CurrentProductionDate];
 
+    public AvaloniaList<string> ProductionLineDates
+    {
+        get
+        {
+            _productionLineDates = ProductionDetailsDict.TryGetValue(CurrentProductionLineName, out var value)
+                ? new AvaloniaList<string>(value.Keys)
+                : [];
+            return _productionLineDates;
+        }
+        set => this.RaiseAndSetIfChanged(ref _productionLineDates, value);
+    }
 
     public Axis[] XAxes { get; set; } =
     [
@@ -214,7 +243,7 @@ public class MainViewModel : ViewModelBase
     private void RefreshData()
     {
         // Reload data from the database
-        DailyData = _databaseManager.LoadData();
+        _dailyData = _databaseManager.LoadData();
         _databaseManager.LoadWeeklyData();
     }
 }

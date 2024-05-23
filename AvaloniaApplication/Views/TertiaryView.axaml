@@ -24,9 +24,9 @@
         </Menu>
         <Separator DockPanel.Dock="Top" />
 
-        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*" Margin="4"
+        <Grid ColumnDefinitions="*,*,*,Auto,Auto,Auto,Auto,Auto,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*" Margin="4"
               ShowGridLines="True">
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" TextAlignment="Center"
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" TextAlignment="Center"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Foreground="CornflowerBlue"
@@ -34,14 +34,22 @@
                 <Run Text="储能电堆装配线 单工位产量查询" />
                 <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
             </TextBlock>
-            <TextBlock Grid.Row="1" Grid.Column="3" Text="工位名称：" HorizontalAlignment="Right" FontSize="25"
+            <TextBlock Grid.Row="1" Grid.Column="4" Text="工位名称：" HorizontalAlignment="Center" FontSize="25"
                        VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="4" Width="150" Height="30" VerticalAlignment="Center"
-                      HorizontalContentAlignment="Center" HorizontalAlignment="Left"
-                      x:Name="NameTypeComboBox"
+            <ComboBox Grid.Row="1" Grid.Column="5" Width="150" Height="30" VerticalAlignment="Center"
+                      HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
+                      x:Name="ProductionNameComboBox"
                       ItemsSource="{Binding ProductionLineNames }"
-                      SelectedIndex="{Binding CurrentProductionIndex}" />
-            <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="8"
+                      SelectedItem="{Binding CurrentProductionLineName}" />
+            <TextBlock Grid.Row="1" Grid.Column="6" Text="生产日期：" HorizontalAlignment="Center" FontSize="25"
+                       VerticalAlignment="Center" />
+            <ComboBox Grid.Row="1" Grid.Column="7" Width="150" Height="30" VerticalAlignment="Center"
+                      HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
+                      x:Name="ProductionDateComboBox"
+                      ItemsSource="{Binding ProductionLineDates }"
+                      SelectedItem="{Binding CurrentProductionDate}" />
+
+            <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3"
                       ItemsSource="{Binding CurrentProductionList}"
                       Margin="1"
                       IsReadOnly="True"
@@ -51,11 +59,12 @@
                       CanUserSortColumns="True"
                       GridLinesVisibility="All">
                 <DataGrid.Columns>
+                    <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
                     <DataGridTextColumn Header="编号" Width="Auto" Binding="{Binding Id}" />
                     <DataGridTextColumn Header="操作人员编号" Width="Auto" Binding="{Binding OperatorId}" />
                     <DataGridTextColumn Header="生产机器编号" Width="Auto" Binding="{Binding MachineId}" />
                     <DataGridTextColumn Header="合格" Width="Auto" Binding="{Binding IsQualified}" />
-                    <DataGridTextColumn Header="生产时间" Width="Auto" Binding="{Binding ProductionTime}" />
+                    <DataGridTextColumn Header="生产时间" Width="*" Binding="{Binding ProductionTime}" />
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
