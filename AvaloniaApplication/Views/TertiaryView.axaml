@@ -38,9 +38,14 @@
                        VerticalAlignment="Center" />
             <ComboBox Grid.Row="1" Grid.Column="4" Width="150" Height="30" VerticalAlignment="Center"
                       HorizontalContentAlignment="Center" HorizontalAlignment="Left"
-                      x:Name="NameTypeComboBox"
+                      x:Name="ProductionNameComboBox"
                       ItemsSource="{Binding ProductionLineNames }"
-                      SelectedIndex="{Binding CurrentProductionIndex}" />
+                      SelectedItem="{Binding CurrentProductionLineName}" />
+            <ComboBox Grid.Row="1" Grid.Column="5" Width="150" Height="30" VerticalAlignment="Center"
+                      HorizontalContentAlignment="Center" HorizontalAlignment="Left"
+                      x:Name="ProductionDateComboBox"
+                      ItemsSource="{Binding ProductionLineDates }"
+                      SelectedItem="{Binding CurrentProductionDate}" />
             <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="8"
                       ItemsSource="{Binding CurrentProductionList}"
                       Margin="1"
