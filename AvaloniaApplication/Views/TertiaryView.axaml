@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
+             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
              x:Class="AvaloniaApplication.Views.TertiaryView"
              x:DataType="vm:MainViewModel">
@@ -67,6 +68,8 @@
                     <DataGridTextColumn Header="生产时间" Width="*" Binding="{Binding ProductionTime}" />
                 </DataGrid.Columns>
             </DataGrid>
+            <avalonia:CartesianChart Grid.Row="2" Grid.Column="3" Grid.RowSpan="4" Grid.ColumnSpan="7"
+                                     Series="{Binding ColumnSeries}" />
         </Grid>
 
 

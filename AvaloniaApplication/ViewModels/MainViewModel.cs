@@ -10,6 +10,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using AvaloniaApplication.Models;
 using AvaloniaApplication.Views;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
@@ -21,15 +22,17 @@ public class MainViewModel : ViewModelBase
 {
     private readonly DatabaseManager _databaseManager;
     private readonly List<UserControl> _views = [new PrimaryView(), new SecondaryView(), new TertiaryView()];
-
-    private string _currentProductionDate;
-    private string _currentProductionLineName;
+    private string _currentProductionDate = DateTime.Today.ToString("yyyy-MM-dd");
+    private string _currentProductionLineName = ProductionLineNames[0];
     private UserControl _currentView;
     private int _currentViewIndex;
     private AvaloniaList<ProductionData> _dailyData = [];
 
+    private KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
+        _hourlyProductionCounts;
 
-    private AvaloniaList<string> _productionLineDates;
+
+    private AvaloniaList<string> _productionLineDates = [];
     private DateTime _today = DateTime.Today;
 
     public MainViewModel()
@@ -58,6 +61,7 @@ public class MainViewModel : ViewModelBase
         ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
             DatabaseManager.ProductionLinesB);
         ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
+        ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(); });
     }
@@ -85,6 +89,8 @@ public class MainViewModel : ViewModelBase
 
     public ISeries[] RaceSeries { get; set; } = new ISeries[1];
 
+    public ISeries[] ColumnSeries { get; set; } = new ISeries[2];
+
     public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
 
     public string CurrentProductionLineName
@@ -96,6 +102,7 @@ public class MainViewModel : ViewModelBase
             ProductionDetailsDict = _databaseManager.LoadAllData();
             this.RaisePropertyChanged(nameof(CurrentProductionList));
             this.RaisePropertyChanged(nameof(ProductionLineDates));
+            _ = GetHourlyProductionCounts();
         }
     }
 
@@ -107,6 +114,7 @@ public class MainViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _currentProductionDate, value);
             ProductionDetailsDict = _databaseManager.LoadAllData();
             this.RaisePropertyChanged(nameof(CurrentProductionList));
+            _ = GetHourlyProductionCounts();
         }
     }
 
@@ -124,6 +132,63 @@ public class MainViewModel : ViewModelBase
         }
         set => this.RaiseAndSetIfChanged(ref _productionLineDates, value);
     }
+
+    public KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
+        HourlyProductionCounts
+    {
+        get
+        {
+            if (!ProductionDetailsDict.TryGetValue(CurrentProductionLineName, out var value))
+            {
+                var qualifiedObservableCollection = new ObservableCollection<ObservableValue>();
+                var nonQualifiedObservableCollection = new ObservableCollection<ObservableValue>();
+                for (var i = 0; i < 24; i++)
+                {
+                    qualifiedObservableCollection.Add(new ObservableValue(0));
+                    nonQualifiedObservableCollection.Add(new ObservableValue(0));
+                }
+
+                _hourlyProductionCounts =
+                    new KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>(
+                        qualifiedObservableCollection, nonQualifiedObservableCollection);
+                return _hourlyProductionCounts;
+            }
+
+            // Reset the counts to zero
+            foreach (var observableValue in _hourlyProductionCounts.Key)
+            {
+                observableValue.Value = 0;
+            }
+
+            foreach (var observableValue in _hourlyProductionCounts.Value)
+            {
+                observableValue.Value = 0;
+            }
+
+            // TODO access the current selected date, current implementation is wrong
+            foreach (var detailsList in value.Values)
+            {
+                foreach (var detail in detailsList)
+                {
+                    var hour = detail.ProductionTime.Hour;
+
+                    switch (detail.IsQualified)
+                    {
+                        case "OK":
+                            _hourlyProductionCounts.Key[hour].Value++;
+                            break;
+                        case "NG":
+                            _hourlyProductionCounts.Value[hour].Value++;
+                            break;
+                    }
+                }
+            }
+
+            return _hourlyProductionCounts;
+        }
+        set => this.RaiseAndSetIfChanged(ref _hourlyProductionCounts, value);
+    }
+
 
     public Axis[] XAxes { get; set; } =
     [
@@ -228,15 +293,21 @@ public class MainViewModel : ViewModelBase
 
         CurrentView = _views[_currentViewIndex];
     }
+    
+    public KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>> GetHourlyProductionCounts()
+    {
+        return HourlyProductionCounts;
+    }
 
     private async Task CheckForDataChanges()
     {
         while (true)
         {
+            // Wait for 10 seconds before reloading data again
+            await Task.Delay(TimeSpan.FromSeconds(10));
             // Reload data from the database
             RefreshData();
             RaceSeries[0].Values = _databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
-            await Task.Delay(TimeSpan.FromSeconds(10)); // Wait for 10 seconds before reloading data again
         }
     }
 
@@ -245,5 +316,12 @@ public class MainViewModel : ViewModelBase
         // Reload data from the database
         _dailyData = _databaseManager.LoadData();
         _databaseManager.LoadWeeklyData();
+        // ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
+        // Console.WriteLine("Console output 0th hour qualified count: " + HourlyProductionCounts.Key[0].Value);
+        // Console.WriteLine("Console output 0th hour non-qualified count: " + HourlyProductionCounts.Value[0].Value);
+        // Console.WriteLine("Console output 1st hour qualified count: " + HourlyProductionCounts.Key[1].Value);
+        // Console.WriteLine("Console output 1st hour non-qualified count: " + HourlyProductionCounts.Value[1].Value);
+        // Console.WriteLine("Console output 2nd hour qualified count: " + HourlyProductionCounts.Key[2].Value);
+        // Console.WriteLine("Console output 2nd hour non-qualified count: " + HourlyProductionCounts.Value[2].Value);
     }
 }

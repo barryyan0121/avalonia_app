@@ -35,6 +35,23 @@ public static class ChartDataGenerator
         }
     }
 
+    public static void GenerateHourlyColumnSeries(ISeries[] series,
+        KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>> keyValuePair)
+    {
+        series[0] = new ColumnSeries<ObservableValue>
+        {
+            Values = keyValuePair.Key,
+            IsVisible = true,
+            Name = "合格",
+        };
+        series[1] = new ColumnSeries<ObservableValue>
+        {
+            Values = keyValuePair.Value,
+            IsVisible = true,
+            Name = "不合格",
+        };
+    }
+
     public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names,
         Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> map)
     {
@@ -66,10 +83,10 @@ public static class ChartDataGenerator
         }
     }
 
-    public static void GenerateGaugeSeries(IEnumerable<ISeries>[] seriesArray, List<string> names,
+    public static void GenerateGaugeSeries(IEnumerable<ISeries>[] series, List<string> names,
         Dictionary<string, ObservableValue> map)
     {
-        for (var i = 0; i < seriesArray.Length; i++)
+        for (var i = 0; i < series.Length; i++)
         {
             var name = names[i];
             if (!map.TryGetValue(name, out var rate))
@@ -77,7 +94,7 @@ public static class ChartDataGenerator
                 continue;
             }
 
-            seriesArray[i] = GaugeGenerator.BuildSolidGauge(
+            series[i] = GaugeGenerator.BuildSolidGauge(
                 new GaugeItem(rate, s =>
                 {
                     s.MaxRadialColumnWidth = 40;
