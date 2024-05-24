@@ -21,7 +21,7 @@ namespace AvaloniaApplication.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private readonly DatabaseManager _databaseManager;
-    private readonly List<UserControl> _views = [new PrimaryView(), new SecondaryView(), new TertiaryView()];
+    private readonly List<UserControl> _views = [new FirstView(), new SecondView(), new ThirdView()];
     private string _currentProductionDate = DateTime.Today.ToString("yyyy-MM-dd");
     private string _currentProductionLineName = ProductionLineNames[0];
     private UserControl _currentView;
@@ -298,9 +298,10 @@ public class MainViewModel : ViewModelBase
     {
         _currentViewIndex = parameter switch
         {
-            "Primary" => 0,
-            "Secondary" => 1,
-            "Tertiary" => 2,
+            "First" => 0,
+            "Second" => 1,
+            "Third" => 2,
+            "Fourth" => 3,
             _ => _currentViewIndex
         };
 
