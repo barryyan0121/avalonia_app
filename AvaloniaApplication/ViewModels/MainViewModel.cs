@@ -308,7 +308,7 @@ public class MainViewModel : ViewModelBase
         CurrentView = _views[_currentViewIndex];
     }
 
-    public KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
+    private KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
         GetHourlyProductionCounts()
     {
         return HourlyProductionCounts;

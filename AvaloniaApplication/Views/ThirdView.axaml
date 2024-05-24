@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
              xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:views="clr-namespace:AvaloniaApplication.Views"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
              x:Class="AvaloniaApplication.Views.ThirdView"
              x:DataType="vm:MainViewModel">
@@ -13,15 +14,7 @@
         <vm:MainViewModel />
     </Design.DataContext>
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="视图切换">
-                <MenuItem Header="生产合格率" Command="{Binding SwitchViewCommand }" CommandParameter="First" />
-                <MenuItem Header="生产进度条" Command="{Binding SwitchViewCommand }" CommandParameter="Second" />
-                <MenuItem Header="单工位查询" Command="{Binding SwitchViewCommand }" CommandParameter="Third" />
-                <MenuItem Header="生产进度看板" Command="{Binding SwitchViewCommand }" CommandParameter="Fourth" />
-            </MenuItem>
-            <MenuItem Header="退出" Command="{Binding ExitCommand }" />
-        </Menu>
+        <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
 
         <Grid ColumnDefinitions="*,*,*,Auto,Auto,Auto,Auto,Auto,*,*,*" RowDefinitions="Auto,Auto,Auto,*,*,*" Margin="4"

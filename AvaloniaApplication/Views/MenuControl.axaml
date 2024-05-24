@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AvaloniaApplication.Views.MenuControl"
+             x:DataType="vm:MainViewModel">
+    <Menu>
+        <MenuItem Header="视图切换">
+            <MenuItem Header="生产合格率" Command="{Binding SwitchViewCommand }" CommandParameter="First" />
+            <MenuItem Header="生产进度条" Command="{Binding SwitchViewCommand }" CommandParameter="Second" />
+            <MenuItem Header="单工位查询" Command="{Binding SwitchViewCommand }" CommandParameter="Third" />
+            <MenuItem Header="生产进度看板" Command="{Binding SwitchViewCommand }" CommandParameter="Fourth" />
+        </MenuItem>
+        <MenuItem Header="退出" Command="{Binding ExitCommand }" />
+    </Menu>
+</UserControl>
