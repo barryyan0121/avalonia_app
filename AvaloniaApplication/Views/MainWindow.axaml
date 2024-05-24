@@ -10,5 +10,4 @@
         Title="生产看板">
 
     <ContentControl Content="{Binding CurrentView}" />
-
 </Window>

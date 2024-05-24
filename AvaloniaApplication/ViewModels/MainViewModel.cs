@@ -21,7 +21,9 @@ namespace AvaloniaApplication.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private readonly DatabaseManager _databaseManager;
-    private readonly List<UserControl> _views = [new FirstView(), new SecondView(), new ThirdView()];
+
+    // Do not forget to add the new views here
+    private readonly List<UserControl> _views = [new FirstView(), new SecondView(), new ThirdView(), new FourthView()];
     private string _currentProductionDate = DateTime.Today.ToString("yyyy-MM-dd");
     private string _currentProductionLineName = ProductionLineNames[0];
     private UserControl _currentView;
@@ -50,18 +52,7 @@ public class MainViewModel : ViewModelBase
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
         _databaseManager = new DatabaseManager(connectionString);
         RefreshData();
-        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
-        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, _databaseManager.RateMap);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, _databaseManager.WeeklyDataMap["totalA"],
-            DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, _databaseManager.WeeklyDataMap["totalB"],
-            DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesA, _databaseManager.WeeklyDataMap["rateA"],
-            DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
-            DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
-        ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
+        GenerateAllSeries();
         // Start a background task to periodically check for data changes
         Task.Run(async () => { await CheckForDataChanges(); });
     }
@@ -224,8 +215,8 @@ public class MainViewModel : ViewModelBase
             Name = "生产进度 (%)",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            NameTextSize = 15,
-            TextSize = 15,
+            NameTextSize = 20,
+            TextSize = 20,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 },
             MinLimit = 0,
             MaxLimit = 100
@@ -283,6 +274,22 @@ public class MainViewModel : ViewModelBase
     {
         get => _currentView;
         set => this.RaiseAndSetIfChanged(ref _currentView, value);
+    }
+
+    private void GenerateAllSeries()
+    {
+        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
+        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, _databaseManager.RateMap);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, _databaseManager.WeeklyDataMap["totalA"],
+            DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, _databaseManager.WeeklyDataMap["totalB"],
+            DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, _databaseManager.WeeklyDataMap["rateA"],
+            DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
+            DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
+        ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
     }
 
     public static void ExitCommand()
