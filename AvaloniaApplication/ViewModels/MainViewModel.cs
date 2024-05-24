@@ -33,7 +33,6 @@ public class MainViewModel : ViewModelBase
     private KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
         _hourlyProductionCounts;
 
-
     private AvaloniaList<string> _productionLineDates = [];
     private DateTime _today = DateTime.Today;
 
@@ -59,6 +58,7 @@ public class MainViewModel : ViewModelBase
 
     private AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>>
         ProductionDetailsDict { get; set; } = [];
+
 
     public AvaloniaList<ProductionData> DailyData
     {
@@ -276,22 +276,6 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentView, value);
     }
 
-    private void GenerateAllSeries()
-    {
-        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
-        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, _databaseManager.RateMap);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, _databaseManager.WeeklyDataMap["totalA"],
-            DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, _databaseManager.WeeklyDataMap["totalB"],
-            DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesA, _databaseManager.WeeklyDataMap["rateA"],
-            DatabaseManager.ProductionLinesA);
-        ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
-            DatabaseManager.ProductionLinesB);
-        ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
-        ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
-    }
-
     public static void ExitCommand()
     {
         // Close the application
@@ -315,6 +299,42 @@ public class MainViewModel : ViewModelBase
         CurrentView = _views[_currentViewIndex];
     }
 
+    public void ToggleSeries(string parameter)
+    {
+        switch (parameter)
+        {
+            case "Total":
+                ColumnSeries[0].IsVisible = true;
+                ColumnSeries[1].IsVisible = true;
+                break;
+            case "Qualified":
+                ColumnSeries[0].IsVisible = true;
+                ColumnSeries[1].IsVisible = false;
+                break;
+            case "NonQualified":
+                ColumnSeries[0].IsVisible = false;
+                ColumnSeries[1].IsVisible = true;
+                break;
+        }
+    }
+
+    private void GenerateAllSeries()
+    {
+        ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
+        ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, _databaseManager.RateMap);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesA, _databaseManager.WeeklyDataMap["totalA"],
+            DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(TotalSeriesB, _databaseManager.WeeklyDataMap["totalB"],
+            DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesA, _databaseManager.WeeklyDataMap["rateA"],
+            DatabaseManager.ProductionLinesA);
+        ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
+            DatabaseManager.ProductionLinesB);
+        ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
+        ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
+    }
+
+
     private KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
         GetHourlyProductionCounts()
     {
@@ -331,7 +351,9 @@ public class MainViewModel : ViewModelBase
             RefreshData();
             RaceSeries[0].Values = _databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
         }
+        // ReSharper disable once FunctionNeverReturns
     }
+
 
     private void RefreshData()
     {
