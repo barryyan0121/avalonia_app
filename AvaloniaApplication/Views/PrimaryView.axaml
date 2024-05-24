@@ -24,7 +24,7 @@
             </MenuItem>
             <MenuItem Header="退出" Command="{Binding ExitCommand }" />
         </Menu>
-        <Separator DockPanel.Dock="Top"/>
+        <Separator DockPanel.Dock="Top" />
         <Grid ColumnDefinitions="2*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,Auto,*,*,*,Auto,*,*,*,*,*" Margin="4"
               ShowGridLines="False">
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"
@@ -66,7 +66,7 @@
 
             <avalonia:CartesianChart Grid.Row="10" Grid.Column="0" Grid.RowSpan="5"
                                      Series="{Binding RateSeriesA}"
-                                     XAxes="{Binding XAxes}"
+                                     XAxes="{Binding XDateAxes}"
                                      YAxes="{Binding YRateAxes}"
                                      LegendPosition="Bottom"
                                      LegendTextPaint="{Binding LegendTextPaint}"
@@ -80,7 +80,7 @@
 
             <avalonia:CartesianChart Grid.Row="10" Grid.Column="1" Grid.RowSpan="5" Grid.ColumnSpan="2"
                                      Series="{Binding TotalSeriesA}"
-                                     XAxes="{Binding XAxes}"
+                                     XAxes="{Binding XDateAxes}"
                                      YAxes="{Binding YProductionAxes}"
                                      LegendPosition="Bottom"
                                      LegendTextPaint="{Binding LegendTextPaint}"
@@ -94,7 +94,7 @@
 
             <avalonia:CartesianChart Grid.Row="10" Grid.Column="3" Grid.RowSpan="5" Grid.ColumnSpan="2"
                                      Series="{Binding RateSeriesB}"
-                                     XAxes="{Binding XAxes}"
+                                     XAxes="{Binding XDateAxes}"
                                      YAxes="{Binding YRateAxes}"
                                      LegendPosition="Bottom"
                                      LegendTextPaint="{Binding LegendTextPaint}"
@@ -108,7 +108,7 @@
 
             <avalonia:CartesianChart Grid.Row="10" Grid.Column="5" Grid.RowSpan="5" Grid.ColumnSpan="2"
                                      Series="{Binding TotalSeriesB}"
-                                     XAxes="{Binding XAxes}"
+                                     XAxes="{Binding XDateAxes}"
                                      YAxes="{Binding YProductionAxes}"
                                      LegendPosition="Bottom"
                                      LegendTextPaint="{Binding LegendTextPaint}"

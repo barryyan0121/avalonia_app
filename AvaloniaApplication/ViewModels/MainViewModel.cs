@@ -166,23 +166,22 @@ public class MainViewModel : ViewModelBase
             }
 
             // TODO access the current selected date, current implementation is wrong
-            foreach (var detailsList in value.Values)
+            var detailsList = value[CurrentProductionDate];
+            foreach (var detail in detailsList)
             {
-                foreach (var detail in detailsList)
-                {
-                    var hour = detail.ProductionTime.Hour;
+                var hour = detail.ProductionTime.Hour;
 
-                    switch (detail.IsQualified)
-                    {
-                        case "OK":
-                            _hourlyProductionCounts.Key[hour].Value++;
-                            break;
-                        case "NG":
-                            _hourlyProductionCounts.Value[hour].Value++;
-                            break;
-                    }
+                switch (detail.IsQualified)
+                {
+                    case "OK":
+                        _hourlyProductionCounts.Key[hour].Value++;
+                        break;
+                    case "NG":
+                        _hourlyProductionCounts.Value[hour].Value++;
+                        break;
                 }
             }
+
 
             return _hourlyProductionCounts;
         }
@@ -190,7 +189,7 @@ public class MainViewModel : ViewModelBase
     }
 
 
-    public Axis[] XAxes { get; set; } =
+    public Axis[] XDateAxes { get; set; } =
     [
         new Axis
         {
@@ -198,8 +197,22 @@ public class MainViewModel : ViewModelBase
             Labels = ChartDataGenerator.GetLastSevenDays(),
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            NameTextSize = 10,
-            TextSize = 10,
+            NameTextSize = 15,
+            TextSize = 15,
+            SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 }
+        }
+    ];
+
+    public Axis[] XHourAxes { get; set; } =
+    [
+        new Axis
+        {
+            Name = "生产时间",
+            Labels = ChartDataGenerator.GetHours(),
+            NamePaint = new SolidColorPaint(SKColors.White),
+            LabelsPaint = new SolidColorPaint(SKColors.White),
+            NameTextSize = 15,
+            TextSize = 15,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 }
         }
     ];
@@ -211,8 +224,8 @@ public class MainViewModel : ViewModelBase
             Name = "生产进度 (%)",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            NameTextSize = 10,
-            TextSize = 10,
+            NameTextSize = 15,
+            TextSize = 15,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray) { StrokeThickness = 2 },
             MinLimit = 0,
             MaxLimit = 100
@@ -234,8 +247,8 @@ public class MainViewModel : ViewModelBase
             Name = "产量",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            NameTextSize = 10,
-            TextSize = 10,
+            NameTextSize = 15,
+            TextSize = 15,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
             {
                 StrokeThickness = 2
@@ -250,7 +263,7 @@ public class MainViewModel : ViewModelBase
             Name = "合格率 (%)",
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
-            NameTextSize = 10,
+            NameTextSize = 15,
             TextSize = 10,
             SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
             {
@@ -293,8 +306,9 @@ public class MainViewModel : ViewModelBase
 
         CurrentView = _views[_currentViewIndex];
     }
-    
-    public KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>> GetHourlyProductionCounts()
+
+    public KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
+        GetHourlyProductionCounts()
     {
         return HourlyProductionCounts;
     }
@@ -316,12 +330,5 @@ public class MainViewModel : ViewModelBase
         // Reload data from the database
         _dailyData = _databaseManager.LoadData();
         _databaseManager.LoadWeeklyData();
-        // ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
-        // Console.WriteLine("Console output 0th hour qualified count: " + HourlyProductionCounts.Key[0].Value);
-        // Console.WriteLine("Console output 0th hour non-qualified count: " + HourlyProductionCounts.Value[0].Value);
-        // Console.WriteLine("Console output 1st hour qualified count: " + HourlyProductionCounts.Key[1].Value);
-        // Console.WriteLine("Console output 1st hour non-qualified count: " + HourlyProductionCounts.Value[1].Value);
-        // Console.WriteLine("Console output 2nd hour qualified count: " + HourlyProductionCounts.Key[2].Value);
-        // Console.WriteLine("Console output 2nd hour non-qualified count: " + HourlyProductionCounts.Value[2].Value);
     }
 }

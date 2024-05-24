@@ -25,7 +25,7 @@
         </Menu>
         <Separator DockPanel.Dock="Top" />
 
-        <Grid ColumnDefinitions="*,*,*,Auto,Auto,Auto,Auto,Auto,*,*,*" RowDefinitions="Auto,Auto,*,*,*,*" Margin="4"
+        <Grid ColumnDefinitions="*,*,*,Auto,Auto,Auto,Auto,Auto,*,*,*" RowDefinitions="Auto,Auto,Auto,*,*,*" Margin="4"
               ShowGridLines="True">
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" TextAlignment="Center"
                        HorizontalAlignment="Center"
@@ -37,20 +37,21 @@
             </TextBlock>
             <TextBlock Grid.Row="1" Grid.Column="4" Text="工位名称：" HorizontalAlignment="Center" FontSize="25"
                        VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="5" Width="150" Height="30" VerticalAlignment="Center"
+            <ComboBox Grid.Row="1" Grid.Column="5" Width="200" Height="40" VerticalAlignment="Center"
                       HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
                       x:Name="ProductionNameComboBox"
+                      FontSize="20"
                       ItemsSource="{Binding ProductionLineNames }"
                       SelectedItem="{Binding CurrentProductionLineName}" />
             <TextBlock Grid.Row="1" Grid.Column="6" Text="生产日期：" HorizontalAlignment="Center" FontSize="25"
                        VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="7" Width="150" Height="30" VerticalAlignment="Center"
+            <ComboBox Grid.Row="1" Grid.Column="7" Width="200" Height="40" VerticalAlignment="Center"
                       HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
                       x:Name="ProductionDateComboBox"
+                      FontSize="20"
                       ItemsSource="{Binding ProductionLineDates }"
                       SelectedItem="{Binding CurrentProductionDate}" />
-
-            <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="4" Grid.ColumnSpan="3"
+            <DataGrid Grid.Row="3" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="5"
                       ItemsSource="{Binding CurrentProductionList}"
                       Margin="1"
                       IsReadOnly="True"
@@ -60,7 +61,7 @@
                       CanUserSortColumns="True"
                       GridLinesVisibility="All">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
+                    <DataGridTextColumn Header="工位名称" Width="Auto" Binding="{Binding Name}" />
                     <DataGridTextColumn Header="编号" Width="Auto" Binding="{Binding Id}" />
                     <DataGridTextColumn Header="操作人员编号" Width="Auto" Binding="{Binding OperatorId}" />
                     <DataGridTextColumn Header="生产机器编号" Width="Auto" Binding="{Binding MachineId}" />
@@ -68,8 +69,20 @@
                     <DataGridTextColumn Header="生产时间" Width="*" Binding="{Binding ProductionTime}" />
                 </DataGrid.Columns>
             </DataGrid>
-            <avalonia:CartesianChart Grid.Row="2" Grid.Column="3" Grid.RowSpan="4" Grid.ColumnSpan="7"
-                                     Series="{Binding ColumnSeries}" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="11"
+                       FontSize="25"
+                       HorizontalAlignment="Center">
+                <Run Text="{Binding CurrentProductionDate }" />
+                <Run Text="{Binding CurrentProductionLineName}" />
+                <Run Text="产量及合格率统计表/柱状图" />
+            </TextBlock>
+            <avalonia:CartesianChart Grid.Row="3" Grid.Column="5" Grid.RowSpan="3" Grid.ColumnSpan="6"
+                                     Series="{Binding ColumnSeries}"
+                                     XAxes="{Binding XHourAxes}"
+                                     YAxes="{Binding YProductionAxes}"
+                                     LegendPosition="Top"
+                                     LegendTextPaint="{Binding LegendTextPaint}"
+                                     LegendTextSize="15" />
         </Grid>
 
 

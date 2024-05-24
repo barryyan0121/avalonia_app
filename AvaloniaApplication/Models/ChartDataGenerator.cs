@@ -42,13 +42,13 @@ public static class ChartDataGenerator
         {
             Values = keyValuePair.Key,
             IsVisible = true,
-            Name = "合格",
+            Name = "合格"
         };
         series[1] = new ColumnSeries<ObservableValue>
         {
             Values = keyValuePair.Value,
             IsVisible = true,
-            Name = "不合格",
+            Name = "不合格"
         };
     }
 
@@ -103,6 +103,12 @@ public static class ChartDataGenerator
                     s.DataLabelsFormatter = point => point.Coordinate.PrimaryValue.ToString("0.0") + "%";
                 }));
         }
+    }
+
+    public static string[] GetHours()
+    {
+        // give me an array with values from 0:00 to 23:00, with the format "HH:00"
+        return Enumerable.Range(0, 24).Select(x => $"{x:00}:00").ToArray();
     }
 
     public static string[] GetLastSevenDays()
