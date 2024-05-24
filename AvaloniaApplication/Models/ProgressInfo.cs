@@ -8,7 +8,7 @@ namespace AvaloniaApplication.Models;
 
 public class ProgressInfo : ObservableValue
 {
-    public static SolidColorPaint[] Paints = Enumerable.Range(0, 9)
+    public static readonly SolidColorPaint[] Paints = Enumerable.Range(0, 9)
         .Select(i => new SolidColorPaint(ColorPalletes.MaterialDesign500[i].AsSKColor()))
         .ToArray();
 

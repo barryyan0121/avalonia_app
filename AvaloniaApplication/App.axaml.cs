@@ -6,7 +6,7 @@ using AvaloniaApplication.Views;
 
 namespace AvaloniaApplication;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {
@@ -24,7 +24,7 @@ public partial class App : Application
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
-            singleViewPlatform.MainView = new PrimaryView
+            singleViewPlatform.MainView = new FirstView
             {
                 DataContext = new MainViewModel()
             };

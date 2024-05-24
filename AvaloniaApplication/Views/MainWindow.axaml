@@ -3,7 +3,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
-        xmlns:views="clr-namespace:AvaloniaApplication.Views"
         mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="AvaloniaApplication.Views.MainWindow"
         x:DataType="vm:MainViewModel"
@@ -11,5 +10,4 @@
         Title="生产看板">
 
     <ContentControl Content="{Binding CurrentView}" />
-
 </Window>

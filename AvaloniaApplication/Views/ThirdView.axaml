@@ -4,8 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
              xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+             xmlns:views="clr-namespace:AvaloniaApplication.Views"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
-             x:Class="AvaloniaApplication.Views.TertiaryView"
+             x:Class="AvaloniaApplication.Views.ThirdView"
              x:DataType="vm:MainViewModel">
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -13,21 +14,13 @@
         <vm:MainViewModel />
     </Design.DataContext>
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="视图切换">
-                <MenuItem Header="生产合格率" Command="{Binding SwitchViewCommand }" CommandParameter="Primary" />
-                <Separator />
-                <MenuItem Header="生产进度" Command="{Binding SwitchViewCommand }" CommandParameter="Secondary" />
-                <Separator />
-                <MenuItem Header="工位查询" Command="{Binding SwitchViewCommand }" CommandParameter="Tertiary" />
-            </MenuItem>
-            <MenuItem Header="退出" Command="{Binding ExitCommand }" />
-        </Menu>
+        <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
 
-        <Grid ColumnDefinitions="*,*,*,Auto,Auto,Auto,Auto,Auto,*,*,*" RowDefinitions="Auto,Auto,Auto,*,*,*" Margin="4"
+        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,Auto,*,*,Auto"
+              Margin="4"
               ShowGridLines="True">
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="11" TextAlignment="Center"
+            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" TextAlignment="Center"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        Foreground="CornflowerBlue"
@@ -35,23 +28,29 @@
                 <Run Text="储能电堆装配线 单工位产量查询" />
                 <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
             </TextBlock>
-            <TextBlock Grid.Row="1" Grid.Column="4" Text="工位名称：" HorizontalAlignment="Center" FontSize="25"
-                       VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="5" Width="200" Height="40" VerticalAlignment="Center"
-                      HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
-                      x:Name="ProductionNameComboBox"
-                      FontSize="20"
-                      ItemsSource="{Binding ProductionLineNames }"
-                      SelectedItem="{Binding CurrentProductionLineName}" />
-            <TextBlock Grid.Row="1" Grid.Column="6" Text="生产日期：" HorizontalAlignment="Center" FontSize="25"
-                       VerticalAlignment="Center" />
-            <ComboBox Grid.Row="1" Grid.Column="7" Width="200" Height="40" VerticalAlignment="Center"
-                      HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
-                      x:Name="ProductionDateComboBox"
-                      FontSize="20"
-                      ItemsSource="{Binding ProductionLineDates }"
-                      SelectedItem="{Binding CurrentProductionDate}" />
-            <DataGrid Grid.Row="3" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="5"
+            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"
+                        Spacing="20"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <TextBlock Text="工位名称：" HorizontalAlignment="Center" FontSize="25"
+                           VerticalAlignment="Center" />
+                <ComboBox Width="200" Height="40" VerticalAlignment="Center"
+                          HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
+                          x:Name="ProductionNameComboBox"
+                          FontSize="20"
+                          ItemsSource="{Binding ProductionLineNames }"
+                          SelectedItem="{Binding CurrentProductionLineName}" />
+                <TextBlock Text="生产日期：" HorizontalAlignment="Center" FontSize="25"
+                           VerticalAlignment="Center" />
+                <ComboBox Width="200" Height="40" VerticalAlignment="Center"
+                          HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
+                          x:Name="ProductionDateComboBox"
+                          FontSize="20"
+                          ItemsSource="{Binding ProductionLineDates }"
+                          SelectedItem="{Binding CurrentProductionDate}" />
+            </StackPanel>
+
+            <DataGrid Grid.Row="3" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
                       ItemsSource="{Binding CurrentProductionList}"
                       Margin="1"
                       IsReadOnly="True"
@@ -69,22 +68,38 @@
                     <DataGridTextColumn Header="生产时间" Width="*" Binding="{Binding ProductionTime}" />
                 </DataGrid.Columns>
             </DataGrid>
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="11"
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="8"
                        FontSize="25"
                        HorizontalAlignment="Center">
                 <Run Text="{Binding CurrentProductionDate }" />
                 <Run Text="{Binding CurrentProductionLineName}" />
                 <Run Text="产量及合格率统计表/柱状图" />
             </TextBlock>
-            <avalonia:CartesianChart Grid.Row="3" Grid.Column="5" Grid.RowSpan="3" Grid.ColumnSpan="6"
+            <avalonia:CartesianChart Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" Grid.ColumnSpan="5"
                                      Series="{Binding ColumnSeries}"
                                      XAxes="{Binding XHourAxes}"
                                      YAxes="{Binding YProductionAxes}"
                                      LegendPosition="Top"
                                      LegendTextPaint="{Binding LegendTextPaint}"
                                      LegendTextSize="15" />
+            <StackPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="5" Orientation="Horizontal"
+                        HorizontalAlignment="Center">
+                <Button Command="{Binding ToggleSeries}"
+                        CommandParameter="Total"
+                        Margin="8 0" FontSize="20">
+                    显示全部
+                </Button>
+                <Button Command="{Binding ToggleSeries}"
+                        CommandParameter="Qualified"
+                        Margin="8 0" FontSize="20">
+                    显示合格
+                </Button>
+                <Button Command="{Binding ToggleSeries}"
+                        CommandParameter="NonQualified"
+                        Margin="8 0" FontSize="20">
+                    显示不合格
+                </Button>
+            </StackPanel>
         </Grid>
-
-
     </DockPanel>
 </UserControl>

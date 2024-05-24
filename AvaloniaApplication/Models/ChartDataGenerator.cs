@@ -42,13 +42,19 @@ public static class ChartDataGenerator
         {
             Values = keyValuePair.Key,
             IsVisible = true,
-            Name = "合格"
+            Name = "合格",
+            DataLabelsSize = 10,
+            DataLabelsPaint = new SolidColorPaint(SKColors.White),
+            DataLabelsPosition = DataLabelsPosition.Top
         };
         series[1] = new ColumnSeries<ObservableValue>
         {
             Values = keyValuePair.Value,
             IsVisible = true,
-            Name = "不合格"
+            Name = "不合格",
+            DataLabelsSize = 10,
+            DataLabelsPaint = new SolidColorPaint(SKColors.White),
+            DataLabelsPosition = DataLabelsPosition.Top
         };
     }
 
@@ -94,11 +100,15 @@ public static class ChartDataGenerator
                 continue;
             }
 
+            var paints = ProgressInfo.Paints;
+
+            var i1 = i;
             series[i] = GaugeGenerator.BuildSolidGauge(
                 new GaugeItem(rate, s =>
                 {
                     s.MaxRadialColumnWidth = 40;
                     s.DataLabelsSize = 20;
+                    s.Fill = paints[i1 % paints.Length];
                     s.DataLabelsPaint = new SolidColorPaint(SKColors.White);
                     s.DataLabelsFormatter = point => point.Coordinate.PrimaryValue.ToString("0.0") + "%";
                 }));
