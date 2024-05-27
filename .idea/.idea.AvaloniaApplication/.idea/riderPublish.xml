@@ -5,6 +5,7 @@
       <list>
         <option value="$PROJECT_DIR$/AvaloniaApplication/bin/Release/net8.0/publish" />
         <option value="$PROJECT_DIR$/AvaloniaApplication.Desktop/bin/Release/net8.0/osx-arm64/publish" />
+        <option value="$PROJECT_DIR$/AvaloniaApplication.Desktop/bin/Release/net7.0/publish" />
       </list>
     </option>
   </component>

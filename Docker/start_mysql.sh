@@ -18,7 +18,7 @@ docker build -t my-mysql-image .
 
 # 运行新的容器
 echo "Running new container..."
-docker run --cpus="4" -d --name mysql-container -p 3306:3306 my-mysql-image
+docker run -d --name mysql-container -p 3306:3306 my-mysql-image
 
 # jdbc connection string:
 # jdbc:mysql://127.0.0.1:3306/sample_db?user=sample_user&password=sample_password

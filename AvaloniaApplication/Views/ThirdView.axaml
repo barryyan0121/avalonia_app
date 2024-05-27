@@ -14,12 +14,14 @@
         <vm:MainViewModel />
     </Design.DataContext>
     <DockPanel>
+        <!-- 菜单控件以及分割线 -->
         <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
-
+        <!-- 表格控件 -->
         <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,Auto,*,*,Auto"
               Margin="4"
-              ShowGridLines="True">
+              ShowGridLines="False">
+            <!-- 标题文本控件 -->
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" TextAlignment="Center"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -28,6 +30,7 @@
                 <Run Text="储能电堆装配线 单工位产量查询" />
                 <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
             </TextBlock>
+            <!-- 堆叠控件 选择工位以及日期 -->
             <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"
                         Spacing="20"
                         Orientation="Horizontal"
@@ -49,7 +52,7 @@
                           ItemsSource="{Binding ProductionLineDates }"
                           SelectedItem="{Binding CurrentProductionDate}" />
             </StackPanel>
-
+            <!-- 表格控件 -->
             <DataGrid Grid.Row="3" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
                       ItemsSource="{Binding CurrentProductionList}"
                       Margin="1"
@@ -68,6 +71,7 @@
                     <DataGridTextColumn Header="生产时间" Width="*" Binding="{Binding ProductionTime}" />
                 </DataGrid.Columns>
             </DataGrid>
+            <!-- 柱状图控件 -->
             <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="8"
                        FontSize="25"
                        HorizontalAlignment="Center">

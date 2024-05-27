@@ -20,46 +20,65 @@ namespace AvaloniaApplication.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {
+    // 数据库管理对象
     private readonly DatabaseManager _databaseManager;
 
-    // Do not forget to add the new views here
+    // 视图数组
     private readonly List<UserControl> _views = [new FirstView(), new SecondView(), new ThirdView(), new FourthView()];
+
+    //当日日期
     private string _currentProductionDate = DateTime.Today.ToString("yyyy-MM-dd");
+
+    // 工位名 
     private string _currentProductionLineName = ProductionLineNames[0];
+
+    // 当前视图
     private UserControl _currentView;
+
+    // 当前视图对应的索引
     private int _currentViewIndex;
+
+    // 当日数据
     private AvaloniaList<ProductionData> _dailyData = [];
 
+    // 每小时产量统计 Key代表合格产量 Value代表不合格产量
     private KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
         _hourlyProductionCounts;
 
+    // 生产线对应的生产日期数组
     private AvaloniaList<string> _productionLineDates = [];
     private DateTime _today = DateTime.Today;
 
+    // 构造函数
     public MainViewModel()
     {
-        for (var i = 0; i < PieSeries.Length; i++)
-        {
-            PieSeries[i] = new ISeries[2];
-        }
-
+        // 初始化当前视图
         _currentView = _views[_currentViewIndex];
 
+        // 开启汉字兼容性
         LiveCharts.Configure(config =>
             config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
+
+        // 数据库连接字符串
         const string connectionString =
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
         _databaseManager = new DatabaseManager(connectionString);
+
+        // 第一次获得数据库数据 
         RefreshData();
+
+        // 生成所有图表数据
         GenerateAllSeries();
-        // Start a background task to periodically check for data changes
-        Task.Run(async () => { await CheckForDataChanges(); });
+
+        // 后台每隔10s轮询数据库数据
+        Task.Run(async () => { await CheckForDataChanges(10); });
     }
 
+    // 生产详情字典 => {生产线名 => {生产日期 => 生产详情列表}}
     private AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>>
         ProductionDetailsDict { get; set; } = [];
 
-
+    // 当天生产详情列表
     public AvaloniaList<ProductionData> DailyData
     {
         get => _dailyData;
@@ -72,18 +91,31 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _today, value);
     }
 
+    // 工区A总产量图表数据
     public ObservableCollection<ISeries> TotalSeriesA { get; set; } = [];
+
+    // 工区B总产量图表数据
     public ObservableCollection<ISeries> TotalSeriesB { get; set; } = [];
+
+    // 工区A合格率图表数据
     public ObservableCollection<ISeries> RateSeriesA { get; set; } = [];
+
+    // 工区B合格率图表数据
     public ObservableCollection<ISeries> RateSeriesB { get; set; } = [];
+
+    //  饼状图
     public ISeries[][] PieSeries { get; set; } = new ISeries[12][];
 
+    // 进度条
     public ISeries[] RaceSeries { get; set; } = new ISeries[1];
 
+    // 柱状图
     public ISeries[] ColumnSeries { get; set; } = new ISeries[2];
 
+    // 仪表盘
     public IEnumerable<ISeries>[] GaugeSeries { get; set; } = new IEnumerable<ISeries>[12];
 
+    // 当前工位名 由界面数据绑定
     public string CurrentProductionLineName
     {
         get => _currentProductionLineName;
@@ -97,6 +129,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    // 当前生产日期 由界面数据绑定
     public string CurrentProductionDate
     {
         get => _currentProductionDate;
@@ -109,9 +142,11 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    // 当前生产详情列表
     public AvaloniaList<ProductionDetails> CurrentProductionList =>
         ProductionDetailsDict[CurrentProductionLineName][CurrentProductionDate];
 
+    // 当前生产线生产日期列表
     public AvaloniaList<string> ProductionLineDates
     {
         get
@@ -124,6 +159,7 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _productionLineDates, value);
     }
 
+    // 每小时产量统计 Key代表合格产量 Value代表不合格产量
     public KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
         HourlyProductionCounts
     {
@@ -145,7 +181,7 @@ public class MainViewModel : ViewModelBase
                 return _hourlyProductionCounts;
             }
 
-            // Reset the counts to zero
+            // 重置每小时产量统计为零
             foreach (var observableValue in _hourlyProductionCounts.Key)
             {
                 observableValue.Value = 0;
@@ -156,7 +192,6 @@ public class MainViewModel : ViewModelBase
                 observableValue.Value = 0;
             }
 
-            // TODO access the current selected date, current implementation is wrong
             var detailsList = value[CurrentProductionDate];
             foreach (var detail in detailsList)
             {
@@ -173,13 +208,12 @@ public class MainViewModel : ViewModelBase
                 }
             }
 
-
             return _hourlyProductionCounts;
         }
         set => this.RaiseAndSetIfChanged(ref _hourlyProductionCounts, value);
     }
 
-
+    // X轴日期坐标轴
     public Axis[] XDateAxes { get; set; } =
     [
         new Axis
@@ -194,6 +228,7 @@ public class MainViewModel : ViewModelBase
         }
     ];
 
+    // X轴小时坐标轴
     public Axis[] XHourAxes { get; set; } =
     [
         new Axis
@@ -208,6 +243,7 @@ public class MainViewModel : ViewModelBase
         }
     ];
 
+    // X轴生产进度坐标轴
     public Axis[] XProgressAxes { get; set; } =
     [
         new Axis
@@ -223,6 +259,7 @@ public class MainViewModel : ViewModelBase
         }
     ];
 
+    // Y轴生产进度坐标轴
     public Axis[] YProgressAxes { get; set; } =
     [
         new Axis
@@ -231,6 +268,7 @@ public class MainViewModel : ViewModelBase
         }
     ];
 
+    // Y轴产量坐标轴
     public Axis[] YProductionAxes { get; set; } =
     [
         new Axis
@@ -247,6 +285,7 @@ public class MainViewModel : ViewModelBase
         }
     ];
 
+    // Y轴合格率坐标轴
     public Axis[] YRateAxes { get; set; } =
     [
         new Axis
@@ -268,14 +307,17 @@ public class MainViewModel : ViewModelBase
         Color = new SKColor(255, 255, 255)
     };
 
+    // 工位名称字符串数组
     public static List<string> ProductionLineNames => DatabaseManager.ProductionLinesTotal;
 
+    // 当前视图
     public UserControl CurrentView
     {
         get => _currentView;
         set => this.RaiseAndSetIfChanged(ref _currentView, value);
     }
 
+    // 退出命令
     public static void ExitCommand()
     {
         // Close the application
@@ -285,6 +327,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    // 切换视图命令
     public void SwitchViewCommand(string parameter)
     {
         _currentViewIndex = parameter switch
@@ -299,6 +342,7 @@ public class MainViewModel : ViewModelBase
         CurrentView = _views[_currentViewIndex];
     }
 
+    // 切换显示柱状图命令
     public void ToggleSeries(string parameter)
     {
         switch (parameter)
@@ -318,6 +362,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    // 生成所有图表
     private void GenerateAllSeries()
     {
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
@@ -334,19 +379,20 @@ public class MainViewModel : ViewModelBase
         ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
     }
 
-
+    // 获取每小时产量统计 触发get属性
     private KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>>
         GetHourlyProductionCounts()
     {
         return HourlyProductionCounts;
     }
 
-    private async Task CheckForDataChanges()
+    // 轮询数据库
+    private async Task CheckForDataChanges(int second)
     {
         while (true)
         {
             // Wait for 10 seconds before reloading data again
-            await Task.Delay(TimeSpan.FromSeconds(10));
+            await Task.Delay(TimeSpan.FromSeconds(second));
             // Reload data from the database
             RefreshData();
             RaceSeries[0].Values = _databaseManager.ProgressInfos.OrderBy(x => x.Value).ToArray();
@@ -354,7 +400,7 @@ public class MainViewModel : ViewModelBase
         // ReSharper disable once FunctionNeverReturns
     }
 
-
+    // 加载数据
     private void RefreshData()
     {
         // Reload data from the database

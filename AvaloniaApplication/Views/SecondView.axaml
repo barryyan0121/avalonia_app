@@ -15,10 +15,13 @@
     </Design.DataContext>
 
     <DockPanel>
+        <!-- 菜单控件以及分割线 -->
         <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
+        <!-- 表格控件 -->
         <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,*" Margin="4"
               ShowGridLines="False">
+            <!-- 标题文本控件 -->
             <TextBlock Grid.Row="0" Grid.Column="0"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -29,7 +32,7 @@
             </TextBlock>
 
             <Separator Grid.Row="1" Grid.Column="0" />
-
+            <!-- 生产进度条控件 -->
             <avalonia:CartesianChart Grid.Row="2" Grid.Column="0"
                                      Series="{Binding RaceSeries}"
                                      XAxes="{Binding XProgressAxes}"
