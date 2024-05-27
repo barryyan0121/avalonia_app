@@ -14,14 +14,16 @@ using SkiaSharp;
 
 namespace AvaloniaApplication.Models;
 
+// This class is responsible for generating data for the charts.
 public static class ChartDataGenerator
 {
-    public static void GenerateLineSeries(ObservableCollection<ISeries> seriesArray,
+    // 生成过去七日的产量及合格率折线图
+    public static void GenerateLineSeries(ObservableCollection<ISeries> series,
         List<ObservableCollection<ObservableValue>> data, List<string> labels)
     {
         for (var i = 0; i < data.Count; i++)
         {
-            seriesArray.Add(new LineSeries<ObservableValue>
+            series.Add(new LineSeries<ObservableValue>
             {
                 Values = data[i],
                 Name = labels[i],
@@ -35,9 +37,11 @@ public static class ChartDataGenerator
         }
     }
 
+    // 生成查询当日分时柱状图
     public static void GenerateHourlyColumnSeries(ISeries[] series,
         KeyValuePair<ObservableCollection<ObservableValue>, ObservableCollection<ObservableValue>> keyValuePair)
     {
+        // 生成合格柱状图
         series[0] = new ColumnSeries<ObservableValue>
         {
             Values = keyValuePair.Key,
@@ -47,6 +51,7 @@ public static class ChartDataGenerator
             DataLabelsPaint = new SolidColorPaint(SKColors.White),
             DataLabelsPosition = DataLabelsPosition.Top
         };
+        // 生成不合格柱状图
         series[1] = new ColumnSeries<ObservableValue>
         {
             Values = keyValuePair.Value,
@@ -58,6 +63,7 @@ public static class ChartDataGenerator
         };
     }
 
+    // 生成当日合格率饼状图
     public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names,
         Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> map)
     {
@@ -89,6 +95,7 @@ public static class ChartDataGenerator
         }
     }
 
+    // 生成当日生产进度仪表盘
     public static void GenerateGaugeSeries(IEnumerable<ISeries>[] series, List<string> names,
         Dictionary<string, ObservableValue> map)
     {
@@ -115,12 +122,14 @@ public static class ChartDataGenerator
         }
     }
 
+    // 生成24小时字符串数组
     public static string[] GetHours()
     {
         // give me an array with values from 0:00 to 23:00, with the format "HH:00"
         return Enumerable.Range(0, 24).Select(x => $"{x:00}:00").ToArray();
     }
 
+    // 生成过去七天的字符串数组
     public static string[] GetLastSevenDays()
     {
         var today = DateTime.Today;
@@ -134,6 +143,7 @@ public static class ChartDataGenerator
         return dates;
     }
 
+    // 生成当日实时生产进度条
     public static void GenerateRowSeries(ISeries[] series, ProgressInfo[] data)
     {
         var rowSeries = new RowSeries<ProgressInfo>

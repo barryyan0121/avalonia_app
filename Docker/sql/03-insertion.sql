@@ -46,6 +46,7 @@ FROM (SELECT '胶纸切割' AS name
                      UNION ALL
                      SELECT 9) AS days;
 
-
+-- Insert sample data into production_details for the past ten days
 CALL InsertProductionDetails(1000);
+-- Update production_data based on production_details
 CALL UpdateProductionData();

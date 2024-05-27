@@ -9,8 +9,10 @@ using MySql.Data.MySqlClient;
 
 namespace AvaloniaApplication.Models;
 
+// DatabaseManager类
 public class DatabaseManager
 {
+    // 所有产线
     public static readonly List<string> ProductionLinesTotal =
     [
         "胶纸切割",
@@ -27,51 +29,57 @@ public class DatabaseManager
         "框膜组件检测"
     ];
 
+    // 产线A
     public static readonly List<string> ProductionLinesA = ProductionLinesTotal.Take(6).ToList();
 
+    // 产线B
     public static readonly List<string> ProductionLinesB = ProductionLinesTotal.Skip(6).ToList();
 
+    // 数据库连接字符串
     private readonly string _connectionString;
 
-    // Create a list of all expected dates for the last 7 days
+    // 生成过去七天的日期
     private readonly List<DateTime> _expectedDates = Enumerable.Range(-6, 7)
         .Select(offset => DateTime.Today.AddDays(offset).Date)
         .ToList();
 
+    // 自定义的生产信息类
     public readonly ProgressInfo[] ProgressInfos;
 
+    // 生产进度哈希表
     public readonly Dictionary<string, ObservableValue> ProgressMap = new();
 
+    // 各产线合格率和不合格率哈希表
     public readonly Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> RateMap = new();
 
+    // 过去一周生产数据哈希表
     public readonly Dictionary<string, List<ObservableCollection<ObservableValue>>> WeeklyDataMap = new();
 
+    // 构造函数
     public DatabaseManager(string connectionString)
     {
         _connectionString = connectionString;
         ProgressInfos = new ProgressInfo[ProductionLinesTotal.Count];
-        var paints = ProgressInfo.Paints;
-        var i = 0;
-        foreach (var line in ProductionLinesTotal)
-        {
-            RateMap[line] =
-                new KeyValuePair<ObservableValue, ObservableValue>(new ObservableValue(0), new ObservableValue(1));
-
-            ProgressMap[line] = new ObservableValue(0);
-            ProgressInfos[i++] = new ProgressInfo(line, 0, ProgressInfo.Paints[i % 9]);
-        }
-
-        InitializeWeeklyData();
+        InitializeData();
     }
 
-    private void InitializeWeeklyData()
+    // 初始化数据
+    private void InitializeData()
     {
+        var index = 0;
+        foreach (var line in ProductionLinesTotal) 
+        {
+            RateMap[line] = new KeyValuePair<ObservableValue, ObservableValue>(new ObservableValue(0), new ObservableValue(1));
+            ProgressMap[line] = new ObservableValue(0);
+            ProgressInfos[index++] = new ProgressInfo(line, 0, ProgressInfo.Paints[index % 9]);
+        }
+        
         var totalA = new List<ObservableCollection<ObservableValue>>();
         var totalB = new List<ObservableCollection<ObservableValue>>();
         var rateA = new List<ObservableCollection<ObservableValue>>();
         var rateB = new List<ObservableCollection<ObservableValue>>();
 
-
+        // 初始化过去七天的数据
         for (var i = 0; i < 6; i++)
         {
             totalA.Add([]);
@@ -80,7 +88,7 @@ public class DatabaseManager
             rateB.Add([]);
         }
 
-        // Initialize totalA with 0s for all expected dates
+        // 初始化过去七天的数据
         foreach (var _ in _expectedDates)
         {
             for (var i = 0; i < 6; i++)
@@ -98,6 +106,7 @@ public class DatabaseManager
         WeeklyDataMap["rateB"] = rateB;
     }
 
+    // 连接数据库并加载当日的数据
     public AvaloniaList<ProductionData> LoadData()
     {
         using var connection = new MySqlConnection(_connectionString);
@@ -138,7 +147,8 @@ public class DatabaseManager
 
         return new AvaloniaList<ProductionData>(data.OrderBy(x => x.Name));
     }
-
+    
+    // 连接数据库并加载过去一周的数据
     public void LoadWeeklyData()
     {
         using var connection = new MySqlConnection(_connectionString);
@@ -154,24 +164,26 @@ public class DatabaseManager
         for (var i = 0; i < ProductionLinesA.Count; i++)
         {
             var line = ProductionLinesA[i];
-            queryBuilder.Append($@"
-                MAX(IF(name = '{line}', qualified_count + defective_count, 0)) AS total_count{i + 1},
-                MAX(IF(name = '{line}', 
-                       CASE 
-                           WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
-                           ELSE 0 
-                       END, 0)) AS qualified_rate{i + 1}");
+            queryBuilder.Append($"""
+                                 MAX(IF(name = '{line}', qualified_count + defective_count, 0)) AS total_count{i + 1},
+                                 MAX(IF(name = '{line}', 
+                                    CASE 
+                                        WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
+                                        ELSE 0 
+                                    END, 0)) AS qualified_rate{i + 1}
+                                 """);
             if (i < ProductionLinesA.Count - 1)
             {
                 queryBuilder.Append(',');
             }
         }
 
-        queryBuilder.Append(@"
-             FROM production_data
-             WHERE Date >= CURDATE() - INTERVAL 6 DAY
-             GROUP BY DATE(Date)
-             ORDER BY DATE(Date);");
+        queryBuilder.Append("""
+                             FROM production_data
+                             WHERE Date >= CURDATE() - INTERVAL 6 DAY
+                             GROUP BY DATE(Date)
+                             ORDER BY DATE(Date);
+                            """);
 
         var query = queryBuilder.ToString();
         var command = new MySqlCommand(query, connection);
@@ -199,24 +211,26 @@ public class DatabaseManager
         for (var i = 0; i < ProductionLinesB.Count; i++)
         {
             var line = ProductionLinesB[i];
-            queryBuilder.Append($@"
-                MAX(IF(name = '{line}', qualified_count + defective_count, 0)) AS total_count{i + 1},
-                MAX(IF(name = '{line}', 
-                       CASE 
-                           WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
-                           ELSE 0 
-                       END, 0)) AS qualified_rate{i + 1}");
+            queryBuilder.Append($"""
+                                 MAX(IF(name = '{line}', qualified_count + defective_count, 0)) AS total_count{i + 1},
+                                 MAX(IF(name = '{line}', 
+                                    CASE 
+                                        WHEN qualified_count + defective_count > 0 THEN qualified_count / (qualified_count + defective_count) 
+                                        ELSE 0 
+                                    END, 0)) AS qualified_rate{i + 1}
+                                 """);
             if (i < ProductionLinesB.Count - 1)
             {
                 queryBuilder.Append(',');
             }
         }
 
-        queryBuilder.Append(@"
-             FROM production_data
-             WHERE Date >= CURDATE() - INTERVAL 6 DAY
-             GROUP BY DATE(Date)
-             ORDER BY DATE(Date);");
+        queryBuilder.Append("""
+                             FROM production_data
+                             WHERE Date >= CURDATE() - INTERVAL 6 DAY
+                             GROUP BY DATE(Date)
+                             ORDER BY DATE(Date);
+                            """);
 
         query = queryBuilder.ToString();
         command = new MySqlCommand(query, connection);
@@ -240,6 +254,7 @@ public class DatabaseManager
         connection.Close();
     }
 
+    // 连接数据库并加载所有数据以实现查找单工位数据
     public AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>> LoadAllData()
     {
         AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>> avaloniaDictionary =
@@ -273,7 +288,6 @@ public class DatabaseManager
             }
 
             var productionDate = productionDetails.ProductionTime.Date.ToString("yyyy-MM-dd");
-            ;
             if (!dateDictionary.TryGetValue(productionDate, out var productionList))
             {
                 productionList = new AvaloniaList<ProductionDetails>();

@@ -1,3 +1,4 @@
+-- Create triggers to update production_data table when production_details or daily_target table is updated
 DELIMITER //
 
 CREATE TRIGGER after_insert_production_details
