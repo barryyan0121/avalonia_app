@@ -49,7 +49,7 @@ public static class ChartDataGenerator
             Name = "合格",
             DataLabelsSize = 10,
             DataLabelsPaint = new SolidColorPaint(SKColors.White),
-            DataLabelsPosition = DataLabelsPosition.Top
+            DataLabelsPosition = DataLabelsPosition.Top,
         };
         // 生成不合格柱状图
         series[1] = new ColumnSeries<ObservableValue>
@@ -64,12 +64,17 @@ public static class ChartDataGenerator
     }
 
     // 生成当日合格率饼状图
-    public static void GeneratePieCharts(ISeries[][] seriesArray, List<string> names,
+    public static void GeneratePieCharts(ISeries[][] pieSeries, List<string> names,
         Dictionary<string, KeyValuePair<ObservableValue, ObservableValue>> map)
     {
-        for (var i = 0; i < seriesArray.Length; i++)
+        for (var i = 0; i < pieSeries.Length; i++)
         {
-            var series = seriesArray[i];
+            pieSeries[i] = new ISeries[2];
+        }
+
+        for (var i = 0; i < pieSeries.Length; i++)
+        {
+            var series = pieSeries[i];
             var name = names[i];
             if (!map.TryGetValue(name, out var pair))
             {

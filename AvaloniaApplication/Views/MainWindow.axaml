@@ -8,6 +8,6 @@
         x:DataType="vm:MainViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="生产看板">
-
+    <!-- 放入当前视图 -->
     <ContentControl Content="{Binding CurrentView}" />
 </Window>

@@ -13,12 +13,14 @@
          to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainViewModel />
     </Design.DataContext>
-
     <DockPanel>
+        <!-- 菜单控件以及分割线 -->
         <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
+        <!-- 表格控件 -->
         <Grid ColumnDefinitions="2*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,*,*,*,Auto,*,*,*,Auto,*,*,*,*,*" Margin="4"
               ShowGridLines="False">
+            <!-- 标题文本控件 -->
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="7"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -32,6 +34,7 @@
                        VerticalAlignment="Center"
                        Text="当日各设备生产总览"
                        FontSize="20" />
+            <!-- 当日生产数据表格控件 -->
             <DataGrid Grid.Row="2" Grid.Column="0" Grid.RowSpan="7"
                       ItemsSource="{Binding DailyData}"
                       Margin="1"
@@ -41,6 +44,7 @@
                       CanUserResizeColumns="True"
                       CanUserSortColumns="True"
                       GridLinesVisibility="All">
+                <!-- 表格每一列的名称 -->
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="工位名" Width="Auto" Binding="{Binding Name}" />
                     <DataGridTextColumn Header="合格数" Width="Auto" Binding="{Binding QualifiedCount}" />
@@ -50,6 +54,7 @@
                 </DataGrid.Columns>
             </DataGrid>
 
+            <!-- 近七日A区设备合格率折线图 -->
             <TextBlock Grid.Row="9" Grid.Column="0"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -63,7 +68,7 @@
                                      LegendPosition="Bottom"
                                      LegendTextPaint="{Binding LegendTextPaint}"
                                      LegendTextSize="10" />
-
+            <!-- 近七日A区设备产量折线图 -->
             <TextBlock Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -78,6 +83,7 @@
                                      LegendTextPaint="{Binding LegendTextPaint}"
                                      LegendTextSize="10" />
 
+            <!-- 近七日B区设备合格率折线图 -->
             <TextBlock Grid.Row="9" Grid.Column="3" Grid.ColumnSpan="2"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -92,6 +98,7 @@
                                      LegendTextPaint="{Binding LegendTextPaint}"
                                      LegendTextSize="10" />
 
+            <!-- 近七日B区设备产量折线图 -->
             <TextBlock Grid.Row="9" Grid.Column="5" Grid.ColumnSpan="2"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -106,6 +113,7 @@
                                      LegendTextPaint="{Binding LegendTextPaint}"
                                      LegendTextSize="10" />
 
+            <!-- 所有工位的饼状图 -->
             <TextBlock Grid.Row="1" Grid.Column="1"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"

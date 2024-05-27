@@ -14,10 +14,13 @@
         <vm:MainViewModel />
     </Design.DataContext>
     <DockPanel>
+        <!-- 菜单控件以及分割线 -->
         <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
+        <!-- 表格控件 -->
         <Grid ColumnDefinitions="*,*,*,*" RowDefinitions="Auto,Auto,*,Auto,*,Auto,*" Margin="4"
               ShowGridLines="False">
+            <!-- 标题文本控件 -->
             <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" TextAlignment="Center"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
@@ -26,6 +29,7 @@
                 <Run Text="储能电堆装配线 生产进度看板" />
                 <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
             </TextBlock>
+            <!-- 生产进度仪表盘控件 -->
             <TextBlock Grid.Row="1" Grid.Column="0"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
