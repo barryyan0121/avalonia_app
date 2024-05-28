@@ -24,3 +24,13 @@ To stop the MySQL container, run the following command:
 docker stop mysql-container
 ```
 
+## Build & Publish the Application
+To build the application, you can use your favorite IDE (Visual Studio / JetBrains Rider) or run the following command in the terminal:
+```bash
+dotnet build
+```
+To publish the application, you can use your favorite IDE (Visual Studio / JetBrains Rider) or run the following command:
+```bash
+dotnet publish -c Release -o ./publish
+```
+This command publishes the application in release mode to the `./publish` directory.
