@@ -3,107 +3,16 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
-             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
              xmlns:views="clr-namespace:AvaloniaApplication.Views"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
              x:Class="AvaloniaApplication.Views.ThirdView"
              x:DataType="vm:MainViewModel">
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
+
     <DockPanel>
         <!-- 菜单控件以及分割线 -->
         <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
         <!-- 表格控件 -->
-        <Grid ColumnDefinitions="*,*,*,*,*,*,*,*" RowDefinitions="Auto,Auto,Auto,*,*,Auto"
-              Margin="4"
-              ShowGridLines="False">
-            <!-- 标题文本控件 -->
-            <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="8" TextAlignment="Center"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Foreground="CornflowerBlue"
-                       FontSize="30">
-                <Run Text="储能电堆装配线 单工位产量查询" />
-                <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
-            </TextBlock>
-            <!-- 堆叠控件 选择工位以及日期 -->
-            <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="8"
-                        Spacing="20"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Center">
-                <TextBlock Text="工位名称：" HorizontalAlignment="Center" FontSize="25"
-                           VerticalAlignment="Center" />
-                <ComboBox Width="200" Height="40" VerticalAlignment="Center"
-                          HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
-                          x:Name="ProductionNameComboBox"
-                          FontSize="20"
-                          ItemsSource="{Binding ProductionLineNames }"
-                          SelectedItem="{Binding CurrentProductionLineName}" />
-                <TextBlock Text="生产日期：" HorizontalAlignment="Center" FontSize="25"
-                           VerticalAlignment="Center" />
-                <ComboBox Width="200" Height="40" VerticalAlignment="Center"
-                          HorizontalContentAlignment="Center" HorizontalAlignment="Center" MaxDropDownHeight="300"
-                          x:Name="ProductionDateComboBox"
-                          FontSize="20"
-                          ItemsSource="{Binding ProductionLineDates }"
-                          SelectedItem="{Binding CurrentProductionDate}" />
-            </StackPanel>
-            <!-- 表格控件 -->
-            <DataGrid Grid.Row="3" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
-                      ItemsSource="{Binding CurrentProductionList}"
-                      Margin="1"
-                      IsReadOnly="True"
-                      AutoGenerateColumns="False"
-                      CanUserReorderColumns="True"
-                      CanUserResizeColumns="True"
-                      CanUserSortColumns="True"
-                      GridLinesVisibility="All">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="工位名称" Width="Auto" Binding="{Binding Name}" />
-                    <DataGridTextColumn Header="编号" Width="Auto" Binding="{Binding Id}" />
-                    <DataGridTextColumn Header="操作人员编号" Width="Auto" Binding="{Binding OperatorId}" />
-                    <DataGridTextColumn Header="生产机器编号" Width="Auto" Binding="{Binding MachineId}" />
-                    <DataGridTextColumn Header="合格" Width="Auto" Binding="{Binding IsQualified}" />
-                    <DataGridTextColumn Header="生产时间" Width="*" Binding="{Binding ProductionTime}" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <!-- 柱状图控件 -->
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="8"
-                       FontSize="25"
-                       HorizontalAlignment="Center">
-                <Run Text="{Binding CurrentProductionDate }" />
-                <Run Text="{Binding CurrentProductionLineName}" />
-                <Run Text="产量及合格率统计表/柱状图" />
-            </TextBlock>
-            <avalonia:CartesianChart Grid.Row="3" Grid.Column="3" Grid.RowSpan="2" Grid.ColumnSpan="5"
-                                     Series="{Binding ColumnSeries}"
-                                     XAxes="{Binding XHourAxes}"
-                                     YAxes="{Binding YProductionAxes}"
-                                     LegendPosition="Top"
-                                     LegendTextPaint="{Binding LegendTextPaint}"
-                                     LegendTextSize="15" />
-            <StackPanel Grid.Row="5" Grid.Column="3" Grid.ColumnSpan="5" Orientation="Horizontal"
-                        HorizontalAlignment="Center">
-                <Button Command="{Binding ToggleSeries}"
-                        CommandParameter="Total"
-                        Margin="8 0" FontSize="20">
-                    显示全部
-                </Button>
-                <Button Command="{Binding ToggleSeries}"
-                        CommandParameter="Qualified"
-                        Margin="8 0" FontSize="20">
-                    显示合格
-                </Button>
-                <Button Command="{Binding ToggleSeries}"
-                        CommandParameter="NonQualified"
-                        Margin="8 0" FontSize="20">
-                    显示不合格
-                </Button>
-            </StackPanel>
-        </Grid>
+        <views:ThirdGridControl />
     </DockPanel>
 </UserControl>

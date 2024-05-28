@@ -3,40 +3,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
-             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
              xmlns:views="clr-namespace:AvaloniaApplication.Views"
              mc:Ignorable="d" d:DesignWidth="1920" d:DesignHeight="1080"
              x:Class="AvaloniaApplication.Views.SecondView"
              x:DataType="vm:MainViewModel">
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-     to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
 
     <DockPanel>
         <!-- 菜单控件以及分割线 -->
         <views:MenuControl DockPanel.Dock="Top" />
         <Separator DockPanel.Dock="Top" />
         <!-- 表格控件 -->
-        <Grid ColumnDefinitions="*" RowDefinitions="Auto,Auto,*" Margin="4"
-              ShowGridLines="False">
-            <!-- 标题文本控件 -->
-            <TextBlock Grid.Row="0" Grid.Column="0"
-                       HorizontalAlignment="Center"
-                       VerticalAlignment="Center"
-                       Foreground="CornflowerBlue"
-                       FontSize="30">
-                <Run Text="储能电堆装配线 工位生产完成率进度条" />
-                <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
-            </TextBlock>
-
-            <Separator Grid.Row="1" Grid.Column="0" />
-            <!-- 生产进度条控件 -->
-            <avalonia:CartesianChart Grid.Row="2" Grid.Column="0"
-                                     Series="{Binding RaceSeries}"
-                                     XAxes="{Binding XProgressAxes}"
-                                     YAxes="{Binding YProgressAxes}" />
-        </Grid>
+        <views:SecondGridControl />
     </DockPanel>
+
 </UserControl>

@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AvaloniaApplication.ViewModels"
+             xmlns:avalonia="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AvaloniaApplication.Views.SecondGridControl"
+             x:DataType="vm:MainViewModel">
+    <Grid ColumnDefinitions="*"
+          RowDefinitions="Auto,Auto,*"
+          Margin="4"
+          ShowGridLines="False">
+        <!-- 标题文本控件 -->
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Foreground="CornflowerBlue"
+                   FontSize="30">
+            <Run Text="储能电堆装配线 工位生产完成率进度条" />
+            <Run Text="{Binding Today, StringFormat=' (yyyy-MM-dd)'}" />
+        </TextBlock>
+
+        <Separator Grid.Row="1" Grid.Column="0" />
+        <!-- 生产进度条控件 -->
+        <avalonia:CartesianChart Grid.Row="2" Grid.Column="0"
+                                 Series="{Binding RaceSeries}"
+                                 XAxes="{Binding XProgressAxes}"
+                                 YAxes="{Binding YProgressAxes}" />
+    </Grid>
+</UserControl>
