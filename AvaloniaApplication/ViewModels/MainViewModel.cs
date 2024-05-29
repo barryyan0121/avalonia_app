@@ -24,7 +24,13 @@ public class MainViewModel : ViewModelBase
     private readonly DatabaseManager _databaseManager;
 
     // 视图数组
-    private readonly List<UserControl> _views = [new FirstView(), new SecondView(), new ThirdView(), new FourthView()];
+    private readonly List<UserControl> _views =
+    [
+        new FirstView(),
+        new SecondView(),
+        new ThirdView(),
+        new FourthView()
+    ];
 
     //当日日期
     private string _currentProductionDate = DateTime.Today.ToString("yyyy-MM-dd");
@@ -122,9 +128,12 @@ public class MainViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _currentProductionLineName, value);
+            // 从数据库重新加载数据
             ProductionDetailsDict = _databaseManager.LoadAllData();
+            // 通知界面数据已经改变
             this.RaisePropertyChanged(nameof(CurrentProductionList));
             this.RaisePropertyChanged(nameof(ProductionLineDates));
+            // 调用get属性获取每小时产量统计
             _ = GetHourlyProductionCounts();
         }
     }
@@ -137,7 +146,9 @@ public class MainViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _currentProductionDate, value);
             ProductionDetailsDict = _databaseManager.LoadAllData();
+            // 通知界面数据已经改变
             this.RaisePropertyChanged(nameof(CurrentProductionList));
+            // 调用get属性获取每小时产量统计
             _ = GetHourlyProductionCounts();
         }
     }
@@ -181,17 +192,19 @@ public class MainViewModel : ViewModelBase
                 return _hourlyProductionCounts;
             }
 
-            // 重置每小时产量统计为零
+            // 重置每小时合格产量统计为零
             foreach (var observableValue in _hourlyProductionCounts.Key)
             {
                 observableValue.Value = 0;
             }
 
+            // 重置每小时不合格产量统计为零
             foreach (var observableValue in _hourlyProductionCounts.Value)
             {
                 observableValue.Value = 0;
             }
 
+            // 遍历当天生产详情列表，统计每小时合格和不合格产量
             var detailsList = value[CurrentProductionDate];
             foreach (var detail in detailsList)
             {
@@ -327,7 +340,7 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    // 切换视图命令
+    // 切换视图命令，不同视图绑定不同的参数
     public void SwitchViewCommand(string parameter)
     {
         _currentViewIndex = parameter switch
@@ -365,17 +378,25 @@ public class MainViewModel : ViewModelBase
     // 生成所有图表
     private void GenerateAllSeries()
     {
+        // 生成仪表盘生产进度条数据
         ChartDataGenerator.GenerateGaugeSeries(GaugeSeries, ProductionLineNames, _databaseManager.ProgressMap);
+        // 生成合格率饼状图数据
         ChartDataGenerator.GeneratePieCharts(PieSeries, ProductionLineNames, _databaseManager.RateMap);
+        // 生成工区A产量折线图
         ChartDataGenerator.GenerateLineSeries(TotalSeriesA, _databaseManager.WeeklyDataMap["totalA"],
             DatabaseManager.ProductionLinesA);
+        // 生成工区B产量折线图
         ChartDataGenerator.GenerateLineSeries(TotalSeriesB, _databaseManager.WeeklyDataMap["totalB"],
             DatabaseManager.ProductionLinesB);
+        // 生成工区A合格率折线图
         ChartDataGenerator.GenerateLineSeries(RateSeriesA, _databaseManager.WeeklyDataMap["rateA"],
             DatabaseManager.ProductionLinesA);
+        // 生成工区B合格率折线图
         ChartDataGenerator.GenerateLineSeries(RateSeriesB, _databaseManager.WeeklyDataMap["rateB"],
             DatabaseManager.ProductionLinesB);
+        // 生成动态生产进度条数据
         ChartDataGenerator.GenerateRowSeries(RaceSeries, _databaseManager.ProgressInfos);
+        // 生成当日分时柱状图数据
         ChartDataGenerator.GenerateHourlyColumnSeries(ColumnSeries, HourlyProductionCounts);
     }
 
@@ -386,7 +407,7 @@ public class MainViewModel : ViewModelBase
         return HourlyProductionCounts;
     }
 
-    // 轮询数据库
+    // 每隔一定时间轮询数据库
     private async Task CheckForDataChanges(int second)
     {
         while (true)

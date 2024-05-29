@@ -5,14 +5,19 @@
       <map>
         <entry key="AvaloniaApplication/App.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/CustomMenu.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
+        <entry key="AvaloniaApplication/Views/FirstGridControl.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
+        <entry key="AvaloniaApplication/Views/FirstView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
+        <entry key="AvaloniaApplication/Views/FourthGridControl.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/FourthView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/MainView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/MainWindow.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/MenuControl.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/PrimaryView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
+        <entry key="AvaloniaApplication/Views/SecondGridControl.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/SecondView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/SecondaryView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/TertiaryView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
+        <entry key="AvaloniaApplication/Views/ThirdGridControl.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
         <entry key="AvaloniaApplication/Views/ThirdView.axaml" value="AvaloniaApplication.Desktop/AvaloniaApplication.Desktop.csproj" />
       </map>
     </option>
