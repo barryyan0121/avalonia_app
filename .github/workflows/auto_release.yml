@@ -51,25 +51,29 @@ jobs:
       - name: Get latest tag
         id: get_latest_tag
         run: |
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "::set-output name=LATEST_TAG::$TAG"
-
+          $latestTag = git describe --tags --abbrev=0 2>$null
+          if (-not $latestTag) {
+            $latestTag = 'v0.0.0'
+          }
+          echo "##[set-output name=LATEST_TAG;]$latestTag"
+        shell: pwsh
+        
       - name: Determine next version
         id: next_version
         run: |
-          LATEST_TAG=${{ steps.get_latest_tag.outputs.LATEST_TAG }}
-          echo "Latest tag: $LATEST_TAG"
-          if [[ $LATEST_TAG == v* ]]; then
-            VERSION_PARTS=(${LATEST_TAG//./ })
-            MAJOR=${VERSION_PARTS[0]#v}
-            MINOR=${VERSION_PARTS[1]}
-            PATCH=${VERSION_PARTS[2]}
-            NEXT_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
-          else
-            NEXT_VERSION="v1.0.0"
-          fi
-          echo "Next version: $NEXT_VERSION"
-          echo "::set-output name=VERSION::$NEXT_VERSION"
+          $latestTag = '${{ steps.get_latest_tag.outputs.LATEST_TAG }}'
+          Write-Host "Latest tag: $latestTag"
+          if ($latestTag -match '^v(\d+)\.(\d+)\.(\d+)$') {
+            $major = [int]$matches[1]
+            $minor = [int]$matches[2]
+            $patch = [int]$matches[3]
+            $nextVersion = "v$major.$minor.$($patch + 1)"
+          } else {
+            $nextVersion = "v1.0.0"
+          }
+          Write-Host "Next version: $nextVersion"
+          echo "##[set-output name=VERSION;]$nextVersion"
+        shell: pwsh
 
       - name: Create GitHub Release
         id: create_release
@@ -88,6 +92,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/publish
           zip -r ../Published_Avalonia_App.zip *
+        shell: pwsh
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -95,6 +100,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/publish
+          asset_path: ${{ github.workspace }}/publish/Published_Avalonia_App.zip
           asset_name: Published_Avalonia_App.zip
           asset_content_type: application/zip
