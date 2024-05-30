@@ -109,7 +109,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}/publish
           zip -r ../Published_Avalonia_App.zip *
-        shell: pwsh
+        shell: bash
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
