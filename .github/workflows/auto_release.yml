@@ -1,0 +1,131 @@
+name: Build and Publish Avalonia App
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: AvaloniaApplication.sln
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.local/share/NuGet/Cache
+          key: |
+            ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Install Avalonia Templates
+        run: dotnet new install Avalonia.Templates
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.Solution_Name }}
+
+      - name: Build solution
+        run: dotnet build ${{ env.Solution_Name }} --configuration Release
+
+      - name: Run unit tests
+        run: dotnet test ${{ env.Solution_Name }} --configuration Release
+
+      - name: Publish Avalonia app
+        run: dotnet publish ${{ env.Solution_Name }} --configuration Release -o ${{ github.workspace }}/publish
+
+      - name: Cache publish output
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/publish
+          key: ｜
+            ${{ runner.os }}-publish-${{ hashFiles('**/*.csproj') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-publish-${{ hashFiles('**/*.csproj') }}-
+            
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Published Avalonia App
+          path: ${{ github.workspace }}/publish
+          
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          latestTag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "::set-output name=LATEST_TAG::$latestTag"
+        shell: bash
+        
+      - name: Determine next version
+        id: next_version
+        run: |
+          latestTag=${{ steps.get_latest_tag.outputs.LATEST_TAG }}
+          echo "Latest tag: $latestTag"
+          if [[ $latestTag =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            major=${BASH_REMATCH[1]}
+            minor=${BASH_REMATCH[2]}
+            patch=${BASH_REMATCH[3]}
+            nextVersion="v$major.$minor.$((patch + 1))"
+          else
+            nextVersion="v1.0.0"
+          fi
+          echo "Next version: $nextVersion"
+          echo "::set-output name=VERSION::$nextVersion"
+        shell: bash
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.next_version.outputs.VERSION }}
+          release_name: Release ${{ steps.next_version.outputs.VERSION }}
+          body: |
+            Release of the .NET project
+          draft: false
+          prerelease: false
+          
+      - name: Install Zip Utility
+        run: |
+          choco install zip -y
+
+      - name: Print Workspace Directory
+        run: |
+          echo "Workspace: ${{ github.workspace }}"
+        shell: bash
+
+      - name: Compress Artifacts
+        run: |
+          cd "${{ github.workspace }}\\publish"
+          zip -r ..\\Published_Avalonia_App.zip *
+        shell: bash
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}\\Published_Avalonia_App.zip
+          asset_name: Published_Avalonia_App.zip
+          asset_content_type: application/zip
