@@ -107,8 +107,9 @@ jobs:
           
       - name: Compress artifacts
         run: |
-          cd ${{ github.workspace }}/publish
-          zip -r ../Published_Avalonia_App.zip *
+          echo "Workspace: ${{ github.workspace }}"
+          cd "${{ github.workspace }}\\publish"
+          zip -r ..\\Published_Avalonia_App.zip *
         shell: bash
 
       - name: Upload Release Asset
