@@ -5,6 +5,7 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -71,15 +72,17 @@ jobs:
       - name: Get latest tag
         id: get_latest_tag
         run: |
-          latestTag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "::set-output name=LATEST_TAG::$latestTag"
+          latestTag=$(git tag --sort=-creatordate | head -n 1)
+          echo "Latest tag is: $latestTag"
+          echo "::set-output name=latestTag::$latestTag"
         shell: bash
         
       - name: Determine next version
         id: next_version
         run: |
-          latestTag=${{ steps.get_latest_tag.outputs.LATEST_TAG }}
+          latestTag=${{ steps.get_latest_tag.outputs.latestTag }}
           echo "Latest tag: $latestTag"
+          
           if [[ $latestTag =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             major=${BASH_REMATCH[1]}
             minor=${BASH_REMATCH[2]}
