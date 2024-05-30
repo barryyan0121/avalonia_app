@@ -25,7 +25,7 @@ jobs:
           dotnet-version: 7.0.x
 
       - name: Install Avalonia Templates
-        run: dotnet new --install Avalonia.Templates
+        run: dotnet new install Avalonia.Templates
 
       - name: Restore dependencies
         run: dotnet restore ${{ env.Solution_Name }}
@@ -40,10 +40,36 @@ jobs:
         run: dotnet publish ${{ env.Solution_Name }} --configuration Release -o ${{ github.workspace }}/publish
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Published Avalonia App
           path: ${{ github.workspace }}/publish
+          
+      - name: Fetch all tags
+        run: git fetch --tags
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "::set-output name=LATEST_TAG::$TAG"
+
+      - name: Determine next version
+        id: next_version
+        run: |
+          LATEST_TAG=${{ steps.get_latest_tag.outputs.LATEST_TAG }}
+          echo "Latest tag: $LATEST_TAG"
+          if [[ $LATEST_TAG == v* ]]; then
+            VERSION_PARTS=(${LATEST_TAG//./ })
+            MAJOR=${VERSION_PARTS[0]#v}
+            MINOR=${VERSION_PARTS[1]}
+            PATCH=${VERSION_PARTS[2]}
+            NEXT_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+          else
+            NEXT_VERSION="v1.0.0"
+          fi
+          echo "Next version: $NEXT_VERSION"
+          echo "::set-output name=VERSION::$NEXT_VERSION"
 
       - name: Create GitHub Release
         id: create_release
@@ -51,12 +77,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.0.0  # Replace with your version or use a dynamic versioning approach
-          release_name: Release v1.0.0  # Replace with your release name
+          tag_name: ${{ steps.next_version.outputs.VERSION }}
+          release_name: Release ${{ steps.next_version.outputs.VERSION }}
           body: |
-            Description of the release
+            Release of the .NET project
           draft: false
           prerelease: false
+          
+      - name: Compress artifacts
+        run: |
+          cd ${{ github.workspace }}/publish
+          zip -r ../Published_Avalonia_App.zip *
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -65,10 +96,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ github.workspace }}/publish
-          asset_name: Published_Avalonia_App.zip  # Name the asset as you prefer
+          asset_name: Published_Avalonia_App.zip
           asset_content_type: application/zip
-
-      - name: Compress artifacts
-        run: |
-          cd ${{ github.workspace }}/publish
-          tar -czvf ../Published_Avalonia_App.tar.gz *
