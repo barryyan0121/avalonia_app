@@ -105,9 +105,17 @@ jobs:
           draft: false
           prerelease: false
           
-      - name: Compress artifacts
+      - name: Install Zip Utility
+        run: |
+          choco install zip -y
+
+      - name: Print Workspace Directory
         run: |
           echo "Workspace: ${{ github.workspace }}"
+        shell: bash
+
+      - name: Compress Artifacts
+        run: |
           cd "${{ github.workspace }}\\publish"
           zip -r ..\\Published_Avalonia_App.zip *
         shell: bash
