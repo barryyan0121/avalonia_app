@@ -5,6 +5,12 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
+  workflow_dispatch:
+    inputs:
+      bump_type:
+        description: 'Type of version bump (major, minor, patch)'
+        required: true
+        default: 'patch'
 
 jobs:
   build:
@@ -71,8 +77,9 @@ jobs:
       - name: Get latest tag
         id: get_latest_tag
         run: |
-          latestTag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "::set-output name=LATEST_TAG::$latestTag"
+          latestTag=$(git tag --sort=-creatordate | head -n 1)
+          echo "Latest tag is: $latestTag"
+          echo "::set-output name=latestTag::$latestTag"
         shell: bash
         
       - name: Determine next version
@@ -80,11 +87,25 @@ jobs:
         run: |
           latestTag=${{ steps.get_latest_tag.outputs.LATEST_TAG }}
           echo "Latest tag: $latestTag"
+          bump_type=${{ github.event.inputs.bump_type }}
+          
           if [[ $latestTag =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             major=${BASH_REMATCH[1]}
             minor=${BASH_REMATCH[2]}
             patch=${BASH_REMATCH[3]}
-            nextVersion="v$major.$minor.$((patch + 1))"
+            
+            case "$bump_type" in
+              major)
+                nextVersion="v$((major + 1)).0.0"
+                ;;
+              minor)
+                nextVersion="v$major.$((minor + 1)).0"
+                ;;
+              patch|*)
+                nextVersion="v$major.$minor.$((patch + 1))"
+                ;;
+            esac
+          
           else
             nextVersion="v1.0.0"
           fi
