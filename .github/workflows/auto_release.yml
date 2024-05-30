@@ -82,7 +82,6 @@ jobs:
         run: |
           latestTag=${{ steps.get_latest_tag.outputs.latestTag }}
           echo "Latest tag: $latestTag"
-          
           if [[ $latestTag =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             major=${BASH_REMATCH[1]}
             minor=${BASH_REMATCH[2]}
