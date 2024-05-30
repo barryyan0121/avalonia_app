@@ -1,0 +1,74 @@
+name: Build and Publish Avalonia App
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    env:
+      Solution_Name: AvaloniaApplication.sln
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 7.0.x
+
+      - name: Install Avalonia Templates
+        run: dotnet new --install Avalonia.Templates
+
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.Solution_Name }}
+
+      - name: Build solution
+        run: dotnet build ${{ env.Solution_Name }} --configuration Release
+
+      - name: Run unit tests
+        run: dotnet test ${{ env.Solution_Name }} --configuration Release
+
+      - name: Publish Avalonia app
+        run: dotnet publish ${{ env.Solution_Name }} --configuration Release -o ${{ github.workspace }}/publish
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Published Avalonia App
+          path: ${{ github.workspace }}/publish
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.0  # Replace with your version or use a dynamic versioning approach
+          release_name: Release v1.0.0  # Replace with your release name
+          body: |
+            Description of the release
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/publish
+          asset_name: Published_Avalonia_App.zip  # Name the asset as you prefer
+          asset_content_type: application/zip
+
+      - name: Compress artifacts
+        run: |
+          cd ${{ github.workspace }}/publish
+          tar -czvf ../Published_Avalonia_App.tar.gz *
