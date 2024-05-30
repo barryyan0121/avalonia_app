@@ -18,6 +18,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          
+      - name: Cache NuGet packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.nuget/packages
+            ~/.local/share/NuGet/Cache
+          key: |
+            ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
 
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
@@ -51,11 +62,11 @@ jobs:
       - name: Get latest tag
         id: get_latest_tag
         run: |
-          $latestTag = git describe --tags --abbrev=0 2>$null
+          $latestTag = $(git describe --tags --abbrev=0 2>$null)
           if (-not $latestTag) {
             $latestTag = 'v0.0.0'
           }
-          echo "##[set-output name=LATEST_TAG;]$latestTag"
+          echo "::set-output name=LATEST_TAG::$latestTag"
         shell: pwsh
         
       - name: Determine next version
@@ -72,7 +83,7 @@ jobs:
             $nextVersion = "v1.0.0"
           }
           Write-Host "Next version: $nextVersion"
-          echo "##[set-output name=VERSION;]$nextVersion"
+          echo "::set-output name=VERSION::$nextVersion"
         shell: pwsh
 
       - name: Create GitHub Release
