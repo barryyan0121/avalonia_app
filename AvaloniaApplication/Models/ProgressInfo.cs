@@ -22,6 +22,10 @@ public class ProgressInfo : ObservableValue
         Value = value;
     }
 
+    public ProgressInfo()
+    {
+    }
+
     public string Name { get; set; }
     public SolidColorPaint Paint { get; set; }
 }

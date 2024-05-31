@@ -46,20 +46,14 @@ public static class ChartDataGenerator
         {
             Values = keyValuePair.Key,
             IsVisible = true,
-            Name = "合格",
-            DataLabelsSize = 10,
-            DataLabelsPaint = new SolidColorPaint(SKColors.White),
-            DataLabelsPosition = DataLabelsPosition.Top,
+            Name = "合格"
         };
         // 生成不合格柱状图
         series[1] = new ColumnSeries<ObservableValue>
         {
             Values = keyValuePair.Value,
             IsVisible = true,
-            Name = "不合格",
-            DataLabelsSize = 10,
-            DataLabelsPaint = new SolidColorPaint(SKColors.White),
-            DataLabelsPosition = DataLabelsPosition.Top
+            Name = "不合格"
         };
     }
 
@@ -135,14 +129,13 @@ public static class ChartDataGenerator
     }
 
     // 生成过去七天的字符串数组
-    public static string[] GetLastSevenDays()
+    public static string[] GetLastSevenDays(DateTime fixedToday)
     {
-        var today = DateTime.Today;
         var dates = new string[7];
 
         for (var i = 0; i < 7; i++)
         {
-            dates[6 - i] = today.AddDays(-i).ToString("M/d");
+            dates[6 - i] = fixedToday.AddDays(-i).ToString("M/d");
         }
 
         return dates;
