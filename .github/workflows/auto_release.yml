@@ -95,6 +95,7 @@ jobs:
         shell: bash
 
       - name: Create GitHub Release
+        if: ${{ startsWith(github.event.head_commit.message, 'Merge pull request') }}
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -107,22 +108,16 @@ jobs:
           draft: false
           prerelease: false
           
-      - name: Install Zip Utility
+      - name: Compress Artifacts
+        if: ${{ startsWith(github.event.head_commit.message, 'Merge pull request') }}
         run: |
           choco install zip -y
-
-      - name: Print Workspace Directory
-        run: |
-          echo "Workspace: ${{ github.workspace }}"
-        shell: bash
-
-      - name: Compress Artifacts
-        run: |
           cd "${{ github.workspace }}\\publish"
           zip -r ..\\Published_Avalonia_App.zip *
         shell: bash
 
       - name: Upload Release Asset
+        if: ${{ startsWith(github.event.head_commit.message, 'Merge pull request') }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
