@@ -4,7 +4,7 @@ using Avalonia.Headless.NUnit;
 
 namespace UnitTest;
 
-public class Tests
+public class ViewModelTests
 {
     [SetUp]
     public void Setup()
@@ -20,7 +20,7 @@ public class Tests
 
         // Open window:
         window.Show();
- 
+
         // Focus text box:
         textBox.Focus();
 

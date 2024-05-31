@@ -129,14 +129,13 @@ public static class ChartDataGenerator
     }
 
     // 生成过去七天的字符串数组
-    public static string[] GetLastSevenDays()
+    public static string[] GetLastSevenDays(DateTime fixedToday)
     {
-        var today = DateTime.Today;
         var dates = new string[7];
 
         for (var i = 0; i < 7; i++)
         {
-            dates[6 - i] = today.AddDays(-i).ToString("M/d");
+            dates[6 - i] = fixedToday.AddDays(-i).ToString("M/d");
         }
 
         return dates;
