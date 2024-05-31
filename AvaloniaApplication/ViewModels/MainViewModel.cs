@@ -68,8 +68,7 @@ public class MainViewModel : ViewModelBase
         // 数据库连接字符串
         const string connectionString =
             "Server=localhost;Port=3306;Database=sample_db;Uid=sample_user;Pwd=sample_password;";
-        var mysqlConnectionWrapper = new MySqlConnectionWrapper(connectionString);
-        _databaseManager = new DatabaseManager(mysqlConnectionWrapper);
+        _databaseManager = new DatabaseManager(connectionString);
 
         // 第一次获得数据库数据 
         RefreshData();
