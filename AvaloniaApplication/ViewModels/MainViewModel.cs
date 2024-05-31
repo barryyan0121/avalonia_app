@@ -232,7 +232,7 @@ public class MainViewModel : ViewModelBase
         new Axis
         {
             Name = "生产日期",
-            Labels = ChartDataGenerator.GetLastSevenDays(),
+            Labels = ChartDataGenerator.GetLastSevenDays(DateTime.Today),
             NamePaint = new SolidColorPaint(SKColors.White),
             LabelsPaint = new SolidColorPaint(SKColors.White),
             NameTextSize = 15,
