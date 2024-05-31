@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaApplication", "Aval
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AvaloniaApplication.Desktop", "AvaloniaApplication.Desktop\AvaloniaApplication.Desktop.csproj", "{BD34EDFD-D12F-49BB-882F-032A326EFD7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{E35C193B-6FB9-49D1-B00E-ECC8B00EBA47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{BD34EDFD-D12F-49BB-882F-032A326EFD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD34EDFD-D12F-49BB-882F-032A326EFD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD34EDFD-D12F-49BB-882F-032A326EFD7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E35C193B-6FB9-49D1-B00E-ECC8B00EBA47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E35C193B-6FB9-49D1-B00E-ECC8B00EBA47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E35C193B-6FB9-49D1-B00E-ECC8B00EBA47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E35C193B-6FB9-49D1-B00E-ECC8B00EBA47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

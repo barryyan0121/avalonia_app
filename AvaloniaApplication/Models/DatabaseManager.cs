@@ -34,9 +34,8 @@ public class DatabaseManager
 
     // 产线B
     public static readonly List<string> ProductionLinesB = ProductionLinesTotal.Skip(6).ToList();
-
-    // 数据库连接字符串
-    private readonly string _connectionString;
+    
+    private readonly MySqlConnectionWrapper _connectionWrapper;
 
     // 生成过去七天的日期
     private readonly List<DateTime> _expectedDates = Enumerable.Range(-6, 7)
@@ -56,9 +55,9 @@ public class DatabaseManager
     public readonly Dictionary<string, List<ObservableCollection<ObservableValue>>> WeeklyDataMap = new();
 
     // 构造函数
-    public DatabaseManager(string connectionString)
+    public DatabaseManager(MySqlConnectionWrapper connectionWrapper)
     {
-        _connectionString = connectionString;
+        _connectionWrapper = connectionWrapper;
         ProgressInfos = new ProgressInfo[ProductionLinesTotal.Count];
         InitializeData();
     }
@@ -109,10 +108,9 @@ public class DatabaseManager
     // 连接数据库并加载当日的数据
     public AvaloniaList<ProductionData> LoadData()
     {
-        using var connection = new MySqlConnection(_connectionString);
-        connection.Open();
+        using var connection = _connectionWrapper.OpenConnection();
         const string query = "SELECT * FROM production_data WHERE DATE(date) = CURDATE();";
-        var command = new MySqlCommand(query, connection);
+        var command = _connectionWrapper.CreateCommand(query);
         var reader = command.ExecuteReader();
         var data = new AvaloniaList<ProductionData>();
 
@@ -151,8 +149,7 @@ public class DatabaseManager
     // 连接数据库并加载过去一周的数据
     public void LoadWeeklyData()
     {
-        using var connection = new MySqlConnection(_connectionString);
-        connection.Open();
+        using var connection = _connectionWrapper.OpenConnection();
 
         var totalA = WeeklyDataMap["totalA"];
         var totalB = WeeklyDataMap["totalB"];
@@ -186,7 +183,7 @@ public class DatabaseManager
                             """);
 
         var query = queryBuilder.ToString();
-        var command = new MySqlCommand(query, connection);
+        var command = _connectionWrapper.CreateCommand(query);
         var reader = command.ExecuteReader();
 
         while (reader.Read())
@@ -259,10 +256,9 @@ public class DatabaseManager
     {
         AvaloniaDictionary<string, AvaloniaDictionary<string, AvaloniaList<ProductionDetails>>> avaloniaDictionary =
             [];
-        using var connection = new MySqlConnection(_connectionString);
-        connection.Open();
+        using var connection = _connectionWrapper.OpenConnection();
         const string query = "SELECT * FROM production_details ORDER BY production_time;";
-        var command = new MySqlCommand(query, connection);
+        var command = _connectionWrapper.CreateCommand(query);
         var reader = command.ExecuteReader();
 
         foreach (var line in ProductionLinesTotal)
