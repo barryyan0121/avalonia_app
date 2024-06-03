@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c1df610-c9dd-466a-8930-ad12da56a891" name="更改" comment="" />
+    <list default="true" id="1c1df610-c9dd-466a-8930-ad12da56a891" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc/storage_v2/_src_/schema/test_db.Sws3qw.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Docker/sql/05-test-db.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/UnitTest/DatabaseManagerTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AvaloniaApplication/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AvaloniaApplication/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc/storage_v2/_src_/schema/sample_db.MyNXQg.zip" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc/storage_v2/_src_/schema/sample_db.MyNXQg.zip" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AvaloniaApplication.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/AvaloniaApplication.sln.DotSettings.user" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,7 +35,7 @@
   "keyToString": {
     "RunOnceActivity.OpenDatabaseViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "dev",
     "last_opened_file_path": "/Users/barry/Desktop/intern/dotnet/AvaloniaApplication"
   }
 }]]></component>

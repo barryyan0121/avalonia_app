@@ -13,11 +13,15 @@ dotnet new install Avalonia.Templates
 ## Start the Mysql Docker Container
 To start the MySQL database, navigate to the `Dockerfile` directory and run the following command:
 ```bash
-docker build -t my-mysql-image .
+docker build -t sample-mysql .
 ```
-After the image is built, run the following command to start the MySQL container:
+Or you can pull from the Docker Hub:
 ```bash
-docker run -d --name mysql-container -p 3306:3306 my-mysql-image
+docker pull hy1299/sample-mysql
+```
+After the image is built or pulled, run the following command to start the MySQL container:
+```bash
+docker run -d --name mysql-container -p 3306:3306 sample-mysql
 ```
 To stop the MySQL container, run the following command:
 ```bash
