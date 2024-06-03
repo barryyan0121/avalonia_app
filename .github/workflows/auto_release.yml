@@ -51,7 +51,7 @@ jobs:
 
       - name: Start MySQL container
         run: |
-          docker run -d --name mysql-container -p 3306:3306 ${{ secrets.DOCKER_USERNAME }}/sample-mysql:latest
+          docker run -d --platform linux/amd64 --name mysql-container -p 3306:3306 ${{ secrets.DOCKER_USERNAME }}/sample-mysql:latest
 
       - name: Wait for MySQL to be ready
         run: |
