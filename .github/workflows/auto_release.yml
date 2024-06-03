@@ -48,7 +48,45 @@ jobs:
 
       - name: Build solution
         run: dotnet build ${{ env.Solution_Name }} --configuration Release
+        
+      - name: Install Docker on Windows
+        run: |
+          choco install docker-desktop --pre
 
+      - name: Start Docker service
+        run: |
+          Start-Service docker
+        shell: powershell
+
+      - name: Start MySQL container
+        run: |
+          docker run -d --name mysql-container -p 3306:3306 ${{ secrets.DOCKER_USERNAME }}/sample-mysql:latest
+
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {30..0}; do
+            if docker exec mysql-container mysql -u sample_user -psample_password -e 'SELECT 1' sample_db &> /dev/null; then
+              echo "MySQL is up and running"
+              break
+            fi
+            echo 'Waiting for MySQL to be ready...'
+            sleep 2
+          done
+          if [ "$i" = 0 ]; then
+            echo "MySQL did not become ready in time."
+            exit 1
+          fi
+      
+      - name: Run tests
+        run: |
+          dotnet test ${{ env.Solution_Name }} --configuration Release
+
+      - name: Stop and remove MySQL container
+        if: always()
+        run: |
+          docker stop mysql-container
+          docker rm mysql-container
+      
       - name: Publish Avalonia app
         run: dotnet publish ${{ env.Solution_Name }} --configuration Release -o ${{ github.workspace }}/publish
 
