@@ -14,11 +14,11 @@ fi
 
 # 构建新的镜像
 echo "Building new Docker image..."
-docker build -t my-mysql-image .
+docker build -t sample-mysql .
 
 # 运行新的容器
 echo "Running new container..."
-docker run -d --name mysql-container -p 3306:3306 my-mysql-image
+docker run -d --name mysql-container -p 3306:3306 sample-mysql
 
 # jdbc connection string:
 # jdbc:mysql://127.0.0.1:3306/sample_db?user=sample_user&password=sample_password
