@@ -5,15 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1c1df610-c9dd-466a-8930-ad12da56a891" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc/storage_v2/_src_/schema/test_db.Sws3qw.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Docker/sql/05-test-db.sql" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/UnitTest/DatabaseManagerTests.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AvaloniaApplication/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AvaloniaApplication/.idea/sqldialects.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/docker_build_push.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/docker_build_push.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc/storage_v2/_src_/schema/sample_db.MyNXQg.zip" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/eadf69c9-4946-4795-a65d-560d5e9b5cfc/storage_v2/_src_/schema/sample_db.MyNXQg.zip" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AvaloniaApplication.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/AvaloniaApplication.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AvaloniaApplication/ViewModels/MainViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/AvaloniaApplication/ViewModels/MainViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UnitTest/ViewModelTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/UnitTest/ViewModelTests.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,13 +27,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenDatabaseViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "dev",
-    "last_opened_file_path": "/Users/barry/Desktop/intern/dotnet/AvaloniaApplication"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenDatabaseViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/barry/Desktop/intern/dotnet/AvaloniaApplication&quot;
   }
-}]]></component>
+}</component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
 </project>
