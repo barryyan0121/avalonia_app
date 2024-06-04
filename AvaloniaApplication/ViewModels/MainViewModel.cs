@@ -408,7 +408,7 @@ public class MainViewModel : ViewModelBase
     }
 
     // 每隔一定时间轮询数据库
-    public async Task CheckForDataChanges(int second)
+    private async Task CheckForDataChanges(int second)
     {
         while (true)
         {

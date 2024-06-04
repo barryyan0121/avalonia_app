@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
+using AvaloniaApplication.Models;
 using AvaloniaApplication.ViewModels;
 using AvaloniaApplication.Views;
 
@@ -83,6 +84,33 @@ public class ViewModelTests
             Assert.That(_viewModel.TotalSeriesB, Is.Not.Empty);
             Assert.That(_viewModel.RateSeriesA, Is.Not.Empty);
             Assert.That(_viewModel.RateSeriesB, Is.Not.Empty);
+        });
+    }
+    
+    [Test]
+    public void Should_Toggle_Series_Visibility()
+    {
+        Assert.Multiple(() =>
+        {
+            _viewModel.ToggleSeries("Qualified");
+            Assert.That(_viewModel.ColumnSeries[0].IsVisible, Is.True);
+            Assert.That(_viewModel.ColumnSeries[1].IsVisible, Is.False);
+            _viewModel.ToggleSeries("NonQualified");
+            Assert.That(_viewModel.ColumnSeries[0].IsVisible, Is.False);
+            Assert.That(_viewModel.ColumnSeries[1].IsVisible, Is.True);
+            _viewModel.ToggleSeries("Total");
+            Assert.That(_viewModel.ColumnSeries[0].IsVisible, Is.True);
+            Assert.That(_viewModel.ColumnSeries[1].IsVisible, Is.True);
+        });
+    }
+
+    [Test]
+    public void Should_Initialize_Axes_Labels_Correctly()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(_viewModel.XDateAxes[0].Labels, Is.EquivalentTo(ChartDataGenerator.GetLastSevenDays(DateTime.Today)));
+            Assert.That(_viewModel.XHourAxes[0].Labels, Is.EquivalentTo(ChartDataGenerator.GetHours()));
         });
     }
 }
