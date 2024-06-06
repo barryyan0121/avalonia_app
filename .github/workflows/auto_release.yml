@@ -35,6 +35,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
 
+      - name: Cache Chocolatey packages
+        uses: actions/cache@v3
+        with:
+          path: C:\ProgramData\chocolatey\lib
+          key: |
+            ${{ runner.os }}-choco-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-choco-
+              
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
@@ -46,6 +55,17 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore ${{ env.Solution_Name }}
 
+      - name: Cache build output
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/bin
+            ${{ github.workspace }}/obj
+          key: |
+            ${{ runner.os }}-build-${{ hashFiles('**/*.csproj') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ hashFiles('**/*.csproj') }}-
+            
       - name: Build solution
         run: dotnet build ${{ env.Solution_Name }} --configuration Release
       
