@@ -1,4 +1,4 @@
-# Cross-Platform .Net Application
+# Cross-Platform .NET Application
 This is a cross-platform .NET application that can run on Windows, Linux, and MacOS. It is a simple application that 
 reads from a MySQL database and displays the production data in various views. The application is written in C# and 
 uses the open source framework called [AvaloniaUI](https://avaloniaui.net/).
