@@ -38,7 +38,7 @@ jobs:
       - name: Cache Chocolatey packages
         uses: actions/cache@v3
         with:
-          path: C:\ProgramData\chocolatey\lib
+          path: C:\ProgramData\chocolatey\lib\zip\tools
           key: |
             ${{ runner.os }}-choco-${{ hashFiles('**/*.csproj') }}
           restore-keys: |
